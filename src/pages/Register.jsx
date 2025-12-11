@@ -62,7 +62,7 @@ const Register = () => {
                     });
 
                     // send user in backend
-                    axios.post('http://localhost:3000/users', mainFormdata)
+                    axios.post('http://localhost:4000/users', mainFormdata)
                     .then(res=>{
                         console.log(res.data);
                     })

@@ -5,44 +5,45 @@ import { getAuth, createUserWithEmailAndPassword, signOut, signInWithEmailAndPas
 export const AuthContext = createContext();
 const auth = getAuth(app);
 
-const createUser = (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
-}
-
+const createUser = (email, password) => createUserWithEmailAndPassword(auth, email, password);
 
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    //console.log('AuthProvider user:', user);
+    const [role, setRole] = useState(null);
 
+    // Fetch role from backend
+    const getUserRole = async (email) => {
+        try {
+            const res = await fetch(`http://localhost:4000/users/role/${email}`);
+            const data = await res.json();
+            setRole(data.role || null);
+        } catch (err) {
+            console.log("Role fetch error:", err);
+        }
+    };
 
-    //Observe auth state changes
+    
+    // Observe auth state changes
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-            //console.log('Auth state changed:', currentUser);
+        const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
             setUser(currentUser);
+
+            if (currentUser?.email) {
+                await getUserRole(currentUser.email);
+            } else {
+                setRole(null);
+            }
+
             setLoading(false);
         });
 
-        return () => unsubscribe(); // Cleanup subscription on unmount
-
+        return () => unsubscribe();
     }, []);
 
-    //logout function
-    const logOut = () => {
-        return signOut(auth);
-    }
-
-    //LogIn 
-    const logIn = (email, password) => {
-        return signInWithEmailAndPassword(auth, email, password);
-    }
-
-    // Google Sign In
-    const googleProvider = new GoogleAuthProvider();
-    const googleLogin = () => {
-        return signInWithPopup(auth, googleProvider);
-    };
+    const logOut = () => signOut(auth);
+    const logIn = (email, password) => signInWithEmailAndPassword(auth, email, password);
+    const googleLogin = () => signInWithPopup(auth, new GoogleAuthProvider());
 
     const authData = {
         user,
@@ -52,13 +53,15 @@ const AuthProvider = ({ children }) => {
         logIn,
         googleLogin,
         loading,
-        setLoading
+        setLoading,
+        role
     };
 
-    return <AuthContext value={authData}>
-        {children}
-        </AuthContext>
-
+    return (
+        <AuthContext.Provider value={authData}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export default AuthProvider;
