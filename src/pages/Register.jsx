@@ -38,6 +38,13 @@ const Register = () => {
         const imageURL = res.data.data.url; // ✔️ Correct Photo URL
         console.log(imageURL);
 
+        const mainFormdata ={
+           email,
+           password,
+           name,
+           imageURL
+        }
+
         if (res.data.success == true) {
            createUser(email, password)
             .then(result => {
@@ -53,8 +60,19 @@ const Register = () => {
                         displayName: name,
                         photoURL: imageURL
                     });
+
+                    // send user in backend
+                    axios.post('http://localhost:3000/users', mainFormdata)
+                    .then(res=>{
+                        console.log(res.data);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+
                     form.reset();
                     navigate('/');
+
                 }).catch(err => console.error(err));
             })
             .catch(err => console.error(err));
