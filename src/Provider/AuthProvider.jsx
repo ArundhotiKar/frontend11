@@ -5,7 +5,6 @@ import { getAuth, createUserWithEmailAndPassword, signOut, signInWithEmailAndPas
 export const AuthContext = createContext();
 const auth = getAuth(app);
 
-const createUser = (email, password) => createUserWithEmailAndPassword(auth, email, password);
 
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -44,6 +43,8 @@ const AuthProvider = ({ children }) => {
     const logOut = () => signOut(auth);
     const logIn = (email, password) => signInWithEmailAndPassword(auth, email, password);
     const googleLogin = () => signInWithPopup(auth, new GoogleAuthProvider());
+    const createUser = (email, password) => createUserWithEmailAndPassword(auth, email, password);
+
 
     const authData = {
         user,
@@ -54,7 +55,8 @@ const AuthProvider = ({ children }) => {
         googleLogin,
         loading,
         setLoading,
-        role
+        role,
+        setRole
     };
 
     return (

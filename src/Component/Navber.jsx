@@ -1,20 +1,11 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Sun, Moon, Book, LogOut } from "lucide-react";
+import { Menu, X, Book, LogOut } from "lucide-react";
 import { AuthContext } from "../Provider/AuthProvider";
 
 const Navber = () => {
-  const [open, setOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const { user, logOut } = useContext(AuthContext);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
+  const [open, setOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -27,18 +18,19 @@ const Navber = () => {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Books", path: "/books" },
-    { name: "Dashboard", path: "/dashboard" },
+    { name: "Dashboard", path: "/dashboard/main" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-md transition-colors">
+    <header className="sticky top-0 z-50 shadow-md transition-colors">
       <div className="container mx-auto flex justify-between items-center py-3 px-6">
-        {/* Text-Based Logo */}
+
+        {/* Logo */}
         <Link
           to="/"
           className="flex items-center gap-2 font-bold text-2xl text-blue-600 dark:text-blue-400"
         >
-          <Book size={32} className="text-blue-600 dark:text-blue-400" />
+          <Book size={32} />
           <span>BookCourier</span>
         </Link>
 
@@ -82,30 +74,16 @@ const Navber = () => {
                 <LogOut size={16} /> Logout
               </button>
             </div>
-
           )}
-
-          {/* Theme Toggle */}
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-          >
-            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center gap-3">
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-          >
-            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
           <button onClick={() => setOpen(!open)}>
             {open ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
+
       </div>
 
       {/* Mobile Menu */}
@@ -132,9 +110,18 @@ const Navber = () => {
             </Link>
           ) : (
             <div className="flex flex-col items-center gap-3">
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">
-                {user.displayName ? user.displayName.charAt(0) : "U"}
-              </div>
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt="Profile"
+                  className="w-12 h-12 rounded-full border-2 border-blue-600 dark:border-blue-400"
+                />
+              ) : (
+                <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">
+                  {user.displayName ? user.displayName.charAt(0).toUpperCase() : "U"}
+                </div>
+              )}
+
               <button
                 onClick={() => {
                   handleLogout();

@@ -2,95 +2,82 @@ import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../Provider/AuthProvider';
 import { Eye, EyeOff } from 'lucide-react';
-import { updateProfile } from "firebase/auth"; // ✅ Import added
+import { updateProfile } from "firebase/auth";
 import axios from "axios";
 
 const Register = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
-    const { createUser, googleLogin, setUser } = useContext(AuthContext);
+    const { createUser, setUser, setRole } = useContext(AuthContext);
 
     const handleRegister = async (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const name = form.name.value;
-        const photoURL = form.photoURL;
-        const file = photoURL.files[0];
+    e.preventDefault();
+    const form = e.target;
+    const name = form.name.value;
+    const photoURL = form.photoURL.files[0];
+    const role = form.role.value;
+    const email = form.email.value;
+    const password = form.password.value;
 
-        const email = form.email.value;
-        const password = form.password.value;
+    // Password validation
+    const errorMessage = validatePassword(password);
+    if (errorMessage) {
+        alert(errorMessage);
+        return;
+    }
 
-        const errorMessage = validatePassword(password);
-        if (errorMessage) {
-            alert(errorMessage);
-            return;
-        }
+    if (!photoURL) {
+        alert("Please upload a photo.");
+        return;
+    }
 
-        // 🔥 UPLOAD IMAGE TO IMGBB
+    try {
+        // Upload photo to IMGBB
         const formData = new FormData();
-        formData.append("image", file);
+        formData.append("image", photoURL);
 
         const res = await axios.post(
             "https://api.imgbb.com/1/upload?key=59eb7243643090e0bb38e5290a4b29e4",
             formData
         );
 
-        const imageURL = res.data.data.url; // ✔️ Correct Photo URL
-        console.log(imageURL);
+        if (!res.data.success) throw new Error("Image upload failed");
+        const imageURL = res.data.data.url;
 
-        const mainFormdata ={
-           email,
-           password,
-           name,
-           imageURL
-        }
+        // Create Firebase user
+        const result = await createUser(email, password);
+        const createdUser = result.user;
 
-        if (res.data.success == true) {
-           createUser(email, password)
-            .then(result => {
-                const createdUser = result.user;
+        // Update Firebase profile
+        await updateProfile(createdUser, {
+            displayName: name,
+            photoURL: imageURL,
+        });
 
-                // Update displayName & photoURL
-                updateProfile(createdUser, {
-                    displayName: name,
-                    photoURL: imageURL
-                }).then(() => {
-                    setUser({
-                        ...createdUser,
-                        displayName: name,
-                        photoURL: imageURL
-                    });
+        // Update user in context
+        setUser({
+            ...createdUser,
+            displayName: name,
+            photoURL: imageURL
+        });
 
-                    // send user in backend
-                    axios.post('http://localhost:4000/users', mainFormdata)
-                    .then(res=>{
-                        console.log(res.data);
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    })
+        // Send user to backend
+        await axios.post('http://localhost:4000/users', { email, password, name, imageURL, role });
 
-                    form.reset();
-                    navigate('/');
+        // Immediately fetch role from backend
+        const roleRes = await fetch(`http://localhost:4000/users/role/${email}`);
+        const roleData = await roleRes.json();
+        setRole(roleData.role || null);
 
-                }).catch(err => console.error(err));
-            })
-            .catch(err => console.error(err));
-        }
+        form.reset();
+        navigate('/');
 
-        
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+    }
+};
 
-    };
-
-    const handleGoogleLogin = () => {
-        googleLogin()
-            .then(result => {
-                const loggedUser = result.user;
-                setUser(loggedUser); // ✅ Google user already has displayName & photoURL
-                navigate('/');
-            })
-            .catch(error => console.error(error));
-    };
 
     const validatePassword = (password) => {
         const uppercase = /[A-Z]/;
@@ -128,15 +115,23 @@ const Register = () => {
                         </button>
                     </div>
 
-                    {/* PhotoURL */}
+                    {/* Role Select */}
+                    <div className="flex flex-col items-start my-2">
+                        <label className="font-semibold mb-1">Choose Role</label>
+                        <select name="role" defaultValue="" required className="outline-none border-2 border-[#264143] shadow-[3px_4px_0_1px_#E99F4C] w-[290px] p-3 rounded text-[15px] bg-white cursor-pointer">
+                            <option value="" disabled>Select your role</option>
+                            <option value="User">User</option>
+                            <option value="Librarian">Librarian</option>
+                        </select>
+                    </div>
+
+                    {/* Photo Upload */}
                     <div className="flex flex-col items-start my-1">
-                        <label className="font-semibold mb-1">Photo URL</label>
-                        <input name="photoURL" type="file" placeholder="Your profile photo URL" className="outline-none border-2 border-[#264143] shadow-[3px_4px_0_1px_#E99F4C] w-[290px] p-3 rounded text-[15px]" />
+                        <label className="font-semibold mb-1">Photo</label>
+                        <input name="photoURL" type="file" className="outline-none border-2 border-[#264143] shadow-[3px_4px_0_1px_#E99F4C] w-[290px] p-3 rounded text-[15px]" />
                     </div>
 
                     <button className="mt-2 w-[290px] p-4 bg-[#DE5499] font-extrabold rounded-xl text-[15px] hover:opacity-90">REGISTER</button>
-
-                    <button onClick={handleGoogleLogin} type="button" className="mt-3 w-[290px] p-3 bg-white border-2 border-[#264143] font-bold rounded-xl flex items-center justify-center gap-2">Login with Google</button>
 
                     <p className="mt-3 font-bold text-[#264143]">
                         Already have an account? <Link to="/login" className="font-extrabold text-[#264143] underline">Login here</Link>
