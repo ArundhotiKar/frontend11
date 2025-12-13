@@ -5,6 +5,8 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Dashboard from "../Dashboard/Dashboard";
 import Aside from "../Dashboard/Aside";
+import MyProfile from "../Dashboard/MyProfile";
+import MyOrders from "../Dashboard/MyOrders";
 
 
 
@@ -31,10 +33,14 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <Dashboard></Dashboard>,
-    children:[
+    children: [
       {
-         path:"main",
-         element:<Aside></Aside>
+        path: "profile",
+        element: <MyProfile></MyProfile>
+      },
+      {
+        path: "orders",
+        element: <MyOrders></MyOrders>
       }
     ]
   }

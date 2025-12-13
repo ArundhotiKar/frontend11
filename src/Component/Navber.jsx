@@ -18,11 +18,11 @@ const Navber = () => {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Books", path: "/books" },
-    { name: "Dashboard", path: "/dashboard/main" },
+    { name: "Dashboard", path: "/dashboard" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 shadow-md transition-colors">
+    <header className="">
       <div className="container mx-auto flex justify-between items-center py-3 px-6">
 
         {/* Logo */}
@@ -36,16 +36,20 @@ const Navber = () => {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.path}
-              className="relative group text-gray-800 dark:text-gray-200 font-medium"
-            >
-              {link.name}
-              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all group-hover:w-full"></span>
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            // Show Dashboard only if user is logged in
+            if (link.name === "Dashboard" && !user) return null;
+            return (
+              <Link
+                key={link.name}
+                to={link.path}
+                className="relative group text-gray-800 dark:text-gray-200 font-medium"
+              >
+                {link.name}
+                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all group-hover:w-full"></span>
+              </Link>
+            );
+          })}
 
           {!user ? (
             <Link
@@ -89,16 +93,19 @@ const Navber = () => {
       {/* Mobile Menu */}
       {open && (
         <div className="md:hidden bg-gray-100 dark:bg-gray-800 px-6 pb-4 flex flex-col gap-4 animate-slideDown">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.path}
-              onClick={() => setOpen(false)}
-              className="text-gray-800 dark:text-gray-200 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
-            >
-              {link.name}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            if (link.name === "Dashboard" && !user) return null;
+            return (
+              <Link
+                key={link.name}
+                to={link.path}
+                onClick={() => setOpen(false)}
+                className="text-gray-800 dark:text-gray-200 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+              >
+                {link.name}
+              </Link>
+            );
+          })}
 
           {!user ? (
             <Link
