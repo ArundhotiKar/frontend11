@@ -2,10 +2,13 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Aside from "./Aside";
 import Navber from "../Component/Navber";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Dashboard = () => {
   return (
     <div className="h-screen flex flex-col">
+       <ToastContainer position="top-center" autoClose={2000} />
       {/* Top Navbar */}
       <Navber />
 

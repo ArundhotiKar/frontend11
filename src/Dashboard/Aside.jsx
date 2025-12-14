@@ -107,11 +107,6 @@ const Aside = () => {
                 <ShoppingCart size={20} />
                 {sidebarOpen && <span>Orders</span>}
               </NavLink>
-
-              <NavLink to="/dashboard/profile" className={menuItemClass}>
-                <User size={20} />
-                {sidebarOpen && <span>My Profile</span>}
-              </NavLink>
             </>
           )}
 

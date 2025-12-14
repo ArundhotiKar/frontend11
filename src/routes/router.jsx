@@ -7,6 +7,10 @@ import Dashboard from "../Dashboard/Dashboard";
 import Aside from "../Dashboard/Aside";
 import MyProfile from "../Dashboard/MyProfile";
 import MyOrders from "../Dashboard/MyOrders";
+import PrivateRoute from "./PrivateRoute";
+import AddBook from "../Dashboard/AddBook";
+import BooksList from "../pages/BooksList";
+import BookDetails from "../pages/BookDetails";
 
 
 
@@ -26,13 +30,25 @@ const router = createBrowserRouter([
       {
         path: "register",
         element: <Register />
+      },
+      {
+        path: "books",
+        element: <BooksList></BooksList>
+      },
+      {
+        path:"/books/:id",
+        element: <BookDetails></BookDetails>
       }
     ]
 
   },
   {
     path: "/dashboard",
-    element: <Dashboard></Dashboard>,
+    element: (
+      <PrivateRoute>
+        <Dashboard />
+      </PrivateRoute>
+    ),
     children: [
       {
         path: "profile",
@@ -41,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: "orders",
         element: <MyOrders></MyOrders>
+      },
+      {
+        path: "add-book",
+        element: <AddBook></AddBook>
       }
     ]
   }
