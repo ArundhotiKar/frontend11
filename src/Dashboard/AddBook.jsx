@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useContext } from "react";
+import { AuthContext } from "../Provider/AuthProvider";
 
 const AddBook = () => {
     const [loading, setLoading] = useState(false);
+    const { user } = useContext(AuthContext);
 
     const handleAddBook = async (e) => {
         e.preventDefault();
@@ -16,6 +19,7 @@ const AddBook = () => {
         const status = form.status.value;
         const imageFile = form.image.files[0];
         const description = form.description.value;
+        const librarianEmail = user?.email;
 
         if (!imageFile) {
             alert("Please upload a book image");
@@ -49,7 +53,7 @@ const AddBook = () => {
             };
 
             // 🔹 Send to backend
-            await axios.post("http://localhost:4000/books", {name, author, price, status, imageURL, description});
+            await axios.post("http://localhost:4000/books", { name, author, price, status, imageURL, description, librarianEmail });
 
             toast.success("📘 Book added successfully!");
             form.reset();

@@ -11,6 +11,7 @@ import PrivateRoute from "./PrivateRoute";
 import AddBook from "../Dashboard/AddBook";
 import BooksList from "../pages/BooksList";
 import BookDetails from "../pages/BookDetails";
+import MyBooks from "../Dashboard/MyBooks";
 
 
 
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
       {
         path: "add-book",
         element: <AddBook></AddBook>
+      },
+      {
+        path:"my-books",
+        element:<MyBooks></MyBooks>
       }
     ]
   }

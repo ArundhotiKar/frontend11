@@ -1,58 +1,119 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { AuthContext } from "../Provider/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 const MyOrders = () => {
-  const [orders, setOrders] = useState([
-    { id: 1, bookTitle: "Clean Code", date: "2025-12-01", status: "pending" },
-    { id: 2, bookTitle: "JavaScript Guide", date: "2025-11-20", status: "paid" }
-  ]);
+  const { user } = useContext(AuthContext);
+  const [orders, setOrders] = useState([]);
+  const navigate = useNavigate();
 
-  const handleCancel = (id) => {
-    setOrders(
-      orders.map(order =>
-        order.id === id ? { ...order, status: "cancelled" } : order
+  useEffect(() => {
+    if (!user?.email) return;
+
+    axios
+      .get(`http://localhost:4000/my-orders?email=${user.email}`)
+      .then(res => setOrders(res.data));
+  }, [user]);
+
+  const cancelOrder = async (id) => {
+    await axios.patch(`http://localhost:4000/orders/cancel/${id}`);
+
+    setOrders(prev =>
+      prev.map(order =>
+        order._id === id ? { ...order, status: "cancelled" } : order
+      )
+    );
+  };
+
+  const payNow = async (id) => {
+    // 👉 normally navigate to payment page
+    // navigate(`/payment/${id}`);
+
+    // demo direct payment success
+    await axios.patch(`http://localhost:4000/orders/pay/${id}`);
+
+    setOrders(prev =>
+      prev.map(order =>
+        order._id === id ? { ...order, paymentStatus: "paid" } : order
       )
     );
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">My Orders</h2>
+    <div className="p-6">
+      <h2 className="text-3xl font-bold mb-6">📦 My Orders</h2>
 
       <table className="w-full border">
-        <thead className="bg-gray-200">
+        <thead className="bg-gray-100">
           <tr>
-            <th className="p-2 border">Book</th>
-            <th className="p-2 border">Date</th>
-            <th className="p-2 border">Status</th>
-            <th className="p-2 border">Actions</th>
+            <th className="border p-2">Book</th>
+            <th className="border p-2">Order Date</th>
+            <th className="border p-2">Status</th>
+            <th className="border p-2">Payment</th>
+            <th className="border p-2">Action</th>
           </tr>
         </thead>
 
         <tbody>
           {orders.map(order => (
-            <tr key={order.id} className="text-center">
-              <td className="border p-2">{order.bookTitle}</td>
-              <td className="border p-2">{order.date}</td>
-              <td className="border p-2">{order.status}</td>
+            <tr key={order._id} className="text-center">
+
+              <td className="border p-2 font-semibold">
+                {order.bookName}
+              </td>
+
+              <td className="border p-2">
+                {new Date(order.createdAt).toLocaleDateString()}
+              </td>
+
+              <td className="border p-2">
+                <span
+                  className={`px-3 py-1 rounded text-white text-sm ${
+                    order.status === "pending"
+                      ? "bg-yellow-500"
+                      : order.status === "cancelled"
+                      ? "bg-red-500"
+                      : "bg-green-600"
+                  }`}
+                >
+                  {order.status}
+                </span>
+              </td>
+
+              <td className="border p-2">
+                <span
+                  className={`px-3 py-1 rounded text-white text-sm ${
+                    order.paymentStatus === "paid"
+                      ? "bg-green-600"
+                      : "bg-gray-500"
+                  }`}
+                >
+                  {order.paymentStatus}
+                </span>
+              </td>
 
               <td className="border p-2 space-x-2">
+                {/* Cancel Button */}
                 {order.status === "pending" && (
-                  <>
-                    <button
-                      onClick={() => handleCancel(order.id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded"
-                    >
-                      Cancel
-                    </button>
+                  <button
+                    onClick={() => cancelOrder(order._id)}
+                    className="px-3 py-1 bg-red-600 text-white rounded"
+                  >
+                    Cancel
+                  </button>
+                )}
 
+                {/* Pay Now Button */}
+                {order.status === "pending" &&
+                  order.paymentStatus === "unpaid" && (
                     <button
-                      onClick={() => alert("Go to payment page")}
-                      className="bg-green-500 text-white px-3 py-1 rounded"
+                      onClick={() => payNow(order._id)}
+                      className="px-3 py-1 bg-blue-600 text-white rounded"
                     >
                       Pay Now
                     </button>
-                  </>
-                )}
+                  )}
               </td>
             </tr>
           ))}

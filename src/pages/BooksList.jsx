@@ -33,7 +33,7 @@ const BooksList = () => {
                             onClick={() => goToBookDetails(book._id)}
                         >
                             <img
-                                src={book.image}
+                                src={book.imageURL}
                                 alt={book.name}
                                 className="w-full h-48 object-cover rounded-lg mb-4"
                             />

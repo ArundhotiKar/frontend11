@@ -2,14 +2,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../Provider/AuthProvider';
+import { toast } from 'react-toastify';
 
 const BookDetails = () => {
-    const { user } = useContext(AuthContext);
+    const { user, role } = useContext(AuthContext);
     const { id } = useParams();
     const [book, setBook] = useState(null);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
-    const [form, setForm] = useState({ phone: '', address: '' });
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -27,30 +27,33 @@ const BookDetails = () => {
         fetchBook();
     }, [id]);
 
-    const handleInputChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
-    const handlePlaceOrder = async () => {
-        if (!form.phone || !form.address) return alert('Please fill all fields');
+    const handleOrderSubmit = async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const phone = form.phone.value;
+        const address = form.address.value;
 
         const orderData = {
             bookId: book._id,
             bookName: book.name,
-            userName: user?.displayName || '',
-            userEmail: user?.email || '',
-            phone: form.phone,
-            address: form.address,
-            status: 'pending',
-            paymentStatus: 'unpaid',
+            userName: user?.displayName,
+            userEmail: user?.email,
+            librarianEmail: book.librarianEmail,
+            phone,
+            address,
+            status: "pending",
+            paymentStatus: "unpaid",
             createdAt: new Date()
         };
 
         try {
-            await axios.post('http://localhost:4000/orders', orderData);
-            alert('Order placed successfully!');
+            await axios.post("http://localhost:4000/orders", orderData);
+            toast.success("Order placed successfully!");
             setModalOpen(false);
-        } catch (err) {
-            console.error(err);
-            alert('Failed to place order');
+            form.reset(); // optional
+        } catch (error) {
+            console.error(error);
+            alert("Failed to place order");
         }
     };
 
@@ -65,7 +68,7 @@ const BookDetails = () => {
                 {/* Book Image */}
                 <div className="relative">
                     <img
-                        src={book.image}
+                        src={book.imageURL}
                         alt={book.name}
                         className="w-full h-full object-cover md:rounded-l-2xl"
                     />
@@ -80,70 +83,98 @@ const BookDetails = () => {
                         <p className="text-2xl font-bold text-blue-600 mb-6">₹{book.price}</p>
                     </div>
 
-                    <button
-                        onClick={() => setModalOpen(true)}
-                        className="bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition shadow-lg"
-                    >
-                        Order Now
-                    </button>
+                    {role === "User" && (
+                        <button
+                            onClick={() => setModalOpen(true)}
+                            className="bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition shadow-lg"
+                        >
+                            Order Now
+                        </button>
+                    )}
+
                 </div>
             </div>
 
             {/* Modal */}
             {modalOpen && (
                 <div className="fixed inset-0 flex justify-center items-center z-50 pointer-events-none">
-                    <div className="bg-white rounded-2xl w-full max-w-md p-6 md:p-8 shadow-2xl relative pointer-events-auto">
-                        {/* Modal Content */}
+                    <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl pointer-events-auto">
+
                         <h2 className="text-2xl font-bold mb-5 text-center">Place Your Order</h2>
 
-                        <div className="space-y-4">
-                            <input
-                                type="text"
-                                value={user?.displayName || ''}
-                                readOnly
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100"
-                            />
-                            <input
-                                type="email"
-                                value={user?.email || ''}
-                                readOnly
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100"
-                            />
-                            <input
-                                type="text"
-                                name="phone"
-                                value={form.phone}
-                                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                                placeholder="Phone Number"
-                            />
-                            <textarea
-                                name="address"
-                                value={form.address}
-                                onChange={(e) => setForm({ ...form, address: e.target.value })}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                                placeholder="Address"
-                                rows={3}
-                            ></textarea>
-                        </div>
+                        <form onSubmit={handleOrderSubmit} className="space-y-4">
 
-                        <div className="mt-6 flex justify-end gap-3">
-                            <button
-                                onClick={() => setModalOpen(false)}
-                                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handlePlaceOrder}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                            >
-                                Place Order
-                            </button>
-                        </div>
+                            {/* Name */}
+                            <div className="flex flex-col">
+                                <label className="font-semibold mb-1">Name</label>
+                                <input
+                                    name="name"
+                                    type="text"
+                                    readOnly
+                                    defaultValue={user?.displayName || ""}
+                                    className="border rounded px-3 py-2 bg-gray-100"
+                                />
+                            </div>
+
+                            {/* Email */}
+                            <div className="flex flex-col">
+                                <label className="font-semibold mb-1">Email</label>
+                                <input
+                                    name="email"
+                                    type="email"
+                                    readOnly
+                                    defaultValue={user?.email || ""}
+                                    className="border rounded px-3 py-2 bg-gray-100"
+                                />
+                            </div>
+
+                            {/* Phone */}
+                            <div className="flex flex-col">
+                                <label className="font-semibold mb-1">Phone Number</label>
+                                <input
+                                    name="phone"
+                                    type="text"
+                                    placeholder="Enter phone number"
+                                    required
+                                    className="border rounded px-3 py-2"
+                                />
+                            </div>
+
+                            {/* Address */}
+                            <div className="flex flex-col">
+                                <label className="font-semibold mb-1">Address</label>
+                                <textarea
+                                    name="address"
+                                    placeholder="Enter address"
+                                    required
+                                    rows={3}
+                                    className="border rounded px-3 py-2"
+                                />
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="flex justify-end gap-3 pt-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setModalOpen(false)}
+                                    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                >
+                                    Place Order
+                                </button>
+                            </div>
+
+                        </form>
                     </div>
                 </div>
             )}
+
 
         </div>
     );
