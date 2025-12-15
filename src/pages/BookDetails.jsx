@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../Provider/AuthProvider';
 import { toast } from 'react-toastify';
@@ -11,6 +11,7 @@ const BookDetails = () => {
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchBook = async () => {
@@ -51,6 +52,7 @@ const BookDetails = () => {
             toast.success("Order placed successfully!");
             setModalOpen(false);
             form.reset(); // optional
+            navigate("/dashboard/orders");
         } catch (error) {
             console.error(error);
             alert("Failed to place order");

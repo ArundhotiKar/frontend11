@@ -3,10 +3,12 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useContext } from "react";
 import { AuthContext } from "../Provider/AuthProvider";
+import { useNavigate } from "react-router";
 
 const AddBook = () => {
     const [loading, setLoading] = useState(false);
     const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const handleAddBook = async (e) => {
         e.preventDefault();
@@ -56,6 +58,8 @@ const AddBook = () => {
             await axios.post("http://localhost:4000/books", { name, author, price, status, imageURL, description, librarianEmail });
 
             toast.success("📘 Book added successfully!");
+            navigate("/dashboard/my-books");
+
             form.reset();
 
         } catch (error) {

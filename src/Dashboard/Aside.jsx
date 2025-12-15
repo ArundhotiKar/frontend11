@@ -103,7 +103,7 @@ const Aside = () => {
                 {sidebarOpen && <span>My Books</span>}
               </NavLink>
 
-              <NavLink to="/dashboard/orders" className={menuItemClass}>
+              <NavLink to="/dashboard/librarians-orders" className={menuItemClass}>
                 <ShoppingCart size={20} />
                 {sidebarOpen && <span>Orders</span>}
               </NavLink>

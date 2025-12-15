@@ -12,6 +12,8 @@ import AddBook from "../Dashboard/AddBook";
 import BooksList from "../pages/BooksList";
 import BookDetails from "../pages/BookDetails";
 import MyBooks from "../Dashboard/MyBooks";
+import LibrarianOrders from "../Dashboard/LibrarianOrders";
+import EditBook from "../Dashboard/EditBook";
 
 
 
@@ -66,7 +68,15 @@ const router = createBrowserRouter([
       {
         path:"my-books",
         element:<MyBooks></MyBooks>
-      }
+      },
+      {
+        path:"librarians-orders",
+        element:<LibrarianOrders></LibrarianOrders>
+      },
+      {
+        path: "edit-book/:id",
+        element: <EditBook />,
+      },
     ]
   }
 ]);

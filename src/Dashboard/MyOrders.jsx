@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../Provider/AuthProvider";
-import { useNavigate } from "react-router-dom";
-
 const MyOrders = () => {
   const { user } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
-  const navigate = useNavigate();
+  
 
   useEffect(() => {
     if (!user?.email) return;
@@ -21,17 +19,24 @@ const MyOrders = () => {
 
     setOrders(prev =>
       prev.map(order =>
-        order._id === id ? { ...order, status: "cancelled" } : order
+        order._id === id
+          ? {
+            ...order,
+            status: "cancelled",
+            paymentStatus: "cancelled"
+          }
+          : order
       )
     );
   };
+
 
   const payNow = async (id) => {
     // 👉 normally navigate to payment page
     // navigate(`/payment/${id}`);
 
     // demo direct payment success
-    await axios.patch(`http://localhost:4000/orders/pay/${id}`);
+    //await axios.patch(`http://localhost:4000/orders/pay/${id}`);
 
     setOrders(prev =>
       prev.map(order =>
@@ -69,13 +74,12 @@ const MyOrders = () => {
 
               <td className="border p-2">
                 <span
-                  className={`px-3 py-1 rounded text-white text-sm ${
-                    order.status === "pending"
-                      ? "bg-yellow-500"
-                      : order.status === "cancelled"
+                  className={`px-3 py-1 rounded text-white text-sm ${order.status === "pending"
+                    ? "bg-yellow-500"
+                    : order.status === "cancelled"
                       ? "bg-red-500"
                       : "bg-green-600"
-                  }`}
+                    }`}
                 >
                   {order.status}
                 </span>
@@ -83,38 +87,40 @@ const MyOrders = () => {
 
               <td className="border p-2">
                 <span
-                  className={`px-3 py-1 rounded text-white text-sm ${
-                    order.paymentStatus === "paid"
-                      ? "bg-green-600"
-                      : "bg-gray-500"
-                  }`}
+                  className={`px-3 py-1 rounded text-white text-sm ${order.paymentStatus === "paid"
+                    ? "bg-green-600"
+                    : "bg-gray-500"
+                    }`}
                 >
                   {order.paymentStatus}
                 </span>
               </td>
 
               <td className="border p-2 space-x-2">
-                {/* Cancel Button */}
+
+                {/* Buttons ONLY if order is pending */}
                 {order.status === "pending" && (
-                  <button
-                    onClick={() => cancelOrder(order._id)}
-                    className="px-3 py-1 bg-red-600 text-white rounded"
-                  >
-                    Cancel
-                  </button>
+                  <>
+                    <button
+                      onClick={() => cancelOrder(order._id)}
+                      className="px-3 py-1 bg-red-600 text-white rounded"
+                    >
+                      Cancel
+                    </button>
+
+                    {order.paymentStatus === "unpaid" && (
+                      <button
+                        onClick={() => payNow(order._id)}
+                        className="px-3 py-1 bg-blue-600 text-white rounded"
+                      >
+                        Pay Now
+                      </button>
+                    )}
+                  </>
                 )}
 
-                {/* Pay Now Button */}
-                {order.status === "pending" &&
-                  order.paymentStatus === "unpaid" && (
-                    <button
-                      onClick={() => payNow(order._id)}
-                      className="px-3 py-1 bg-blue-600 text-white rounded"
-                    >
-                      Pay Now
-                    </button>
-                  )}
               </td>
+
             </tr>
           ))}
         </tbody>
