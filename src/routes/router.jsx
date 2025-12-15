@@ -14,6 +14,7 @@ import BookDetails from "../pages/BookDetails";
 import MyBooks from "../Dashboard/MyBooks";
 import LibrarianOrders from "../Dashboard/LibrarianOrders";
 import EditBook from "../Dashboard/EditBook";
+import UserManagement from "../Dashboard/UserManagement";
 
 
 
@@ -42,6 +43,7 @@ const router = createBrowserRouter([
         path:"/books/:id",
         element: <BookDetails></BookDetails>
       }
+      
     ]
 
   },
@@ -77,6 +79,10 @@ const router = createBrowserRouter([
         path: "edit-book/:id",
         element: <EditBook />,
       },
+      {
+         path:"all-users",
+         element: <UserManagement></UserManagement>
+      }
     ]
   }
 ]);

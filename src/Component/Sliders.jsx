@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router";
 
 const slides = [
   {
@@ -51,12 +52,12 @@ const Sliders = () => {
             <div className="text-white px-10 max-w-xl">
               <h1 className="text-4xl font-bold mb-4">{slide.title}</h1>
               <p className="mb-6 text-lg">{slide.description}</p>
-              <a
-                href="/all-books"
+              <Link
+                to="/books"
                 className="inline-block bg-white text-black px-6 py-3 rounded-xl font-semibold hover:bg-gray-200"
               >
                 View All Books
-              </a>
+              </Link>
             </div>
           </div>
         </div>
