@@ -9,7 +9,7 @@ const BooksList = () => {
     useEffect(() => {
         axios.get("http://localhost:4000/books")
             .then(res => {
-                console.log("Books from backend:", res.data);
+                //console.log("Books from backend:", res.data);
                 setBooks(res.data);
             })
             .catch(err => console.error(err));

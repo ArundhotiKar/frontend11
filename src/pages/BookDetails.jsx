@@ -11,6 +11,7 @@ const BookDetails = () => {
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [error, setError] = useState('');
+    const [isInWishlist, setIsInWishlist] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,6 +28,20 @@ const BookDetails = () => {
         };
         fetchBook();
     }, [id]);
+
+    useEffect(() => {
+        const checkWishlist = async () => {
+            if (user) {
+                try {
+                    const res = await axios.get(`http://localhost:4000/wishlist/id?userEmail=${user.email}&bookId=${id}`);
+                    setIsInWishlist(res.data.length > 0);
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        };
+        checkWishlist();
+    }, [user, id]);
 
     const handleOrderSubmit = async (e) => {
         e.preventDefault();
@@ -59,31 +74,38 @@ const BookDetails = () => {
         }
     };
 
-    const handleAddToWishlist = async () => {
+    const handleWishlistToggle = async () => {
         if (!user) {
             toast.error("Please login first");
             return;
         }
 
-        const wishlistData = {
-            bookId: book._id,
-            bookName: book.name,
-            author: book.author,
-            price: book.price,
-            imageURL: book.imageURL,
-            userEmail: user.email,
-            createdAt: new Date()
-        };
-
         try {
-            await axios.post("http://localhost:4000/wishlist", wishlistData);
-            toast.success("Added to wishlist ❤️");
+            if (isInWishlist) {
+                // Remove from wishlist
+                await axios.delete(`http://localhost:4000/wishlist/${id}?userEmail=${user.email}`);
+                toast.success("Removed from wishlist 💔");
+                setIsInWishlist(false);
+            } else {
+                // Add to wishlist
+                const wishlistData = {
+                    bookId: book._id,
+                    bookName: book.name,
+                    author: book.author,
+                    price: book.price,
+                    imageURL: book.imageURL,
+                    userEmail: user.email,
+                    createdAt: new Date()
+                };
+                await axios.post("http://localhost:4000/wishlist", wishlistData);
+                toast.success("Added to wishlist ❤️");
+                setIsInWishlist(true);
+            }
         } catch (error) {
             console.error(error);
-            toast.error("Already in wishlist or failed");
+            toast.error("Wishlist action failed");
         }
     };
-
 
     if (loading) return <p className="text-center mt-20 text-lg">Loading book details...</p>;
     if (error) return <p className="text-center mt-20 text-red-500">{error}</p>;
@@ -116,7 +138,7 @@ const BookDetails = () => {
                             {book.description || "No description available."}
                         </p>
 
-                        {/* Buttons slightly up */}
+                        {/* Buttons */}
                         {role === "User" && (
                             <div className="flex gap-3 mb-4">
                                 <button
@@ -127,17 +149,18 @@ const BookDetails = () => {
                                 </button>
 
                                 <button
-                                    onClick={handleAddToWishlist}
-                                    className="flex-1 py-2 md:py-3 rounded-xl border-2 border-blue-600 text-blue-600 font-semibold hover:bg-blue-600 hover:text-white transition"
+                                    onClick={handleWishlistToggle}
+                                    className={`flex-1 py-2 md:py-3 rounded-xl font-semibold transition
+                                    ${isInWishlist ? 'bg-red-600 text-white hover:bg-red-700 border-none' 
+                                                   : 'border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white'}`}
                                 >
-                                    ❤️ Add to Wishlist
+                                    {isInWishlist ? 'Remove from Wishlist 💔' : 'Add to Wishlist ❤️'}
                                 </button>
                             </div>
                         )}
                     </div>
                 </div>
             </div>
-
 
             {/* Modal */}
             {modalOpen && (
@@ -218,8 +241,6 @@ const BookDetails = () => {
                     </div>
                 </div>
             )}
-
-
         </div>
     );
 };
