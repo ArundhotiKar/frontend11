@@ -16,8 +16,7 @@ import LibrarianOrders from "../Dashboard/LibrarianOrders";
 import EditBook from "../Dashboard/EditBook";
 import UserManagement from "../Dashboard/UserManagement";
 import ManageBooks from "../Dashboard/ManageBooks";
-
-
+import Mywishlist from "../Dashboard/Wishlist";
 
 const router = createBrowserRouter([
   {
@@ -87,6 +86,10 @@ const router = createBrowserRouter([
       {
         path:"manage-books",
         element: <ManageBooks></ManageBooks>
+      },
+      {
+        path: "wishlist",
+        element:<Mywishlist></Mywishlist>
       }
     ]
   }

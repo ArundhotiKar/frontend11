@@ -10,6 +10,7 @@ import {
   BookOpen,
   Users,
   Settings,
+  Heart,
 } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 import { AuthContext } from "../Provider/AuthProvider";
@@ -21,8 +22,7 @@ const Aside = () => {
 
   // menu class
   const menuItemClass = ({ isActive }) =>
-    `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#DE5499] ${
-      isActive ? "bg-[#DE5499]" : ""
+    `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#DE5499] ${isActive ? "bg-[#DE5499]" : ""
     }`;
 
   return (
@@ -87,9 +87,14 @@ const Aside = () => {
                 <FileText size={20} />
                 {sidebarOpen && <span>Invoices</span>}
               </NavLink>
+
+              {/* ✅ Wishlist */}
+              <NavLink to="/dashboard/wishlist" className={menuItemClass}>
+                <Heart size={20} />
+                {sidebarOpen && <span>My Wishlist</span>}
+              </NavLink>
             </>
           )}
-
           {/* LIBRARIAN */}
           {role === "Librarian" && (
             <>
