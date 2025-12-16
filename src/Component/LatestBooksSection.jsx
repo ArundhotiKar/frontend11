@@ -1,10 +1,51 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 const LatestBooksSection = () => {
+    const [books, setBooks] = useState([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        axios.get("http://localhost:4000/books")
+            .then(res => {
+                console.log("Books from backend:", res.data);
+                setBooks(res.data);
+            })
+            .catch(err => console.error(err));
+    }, []);
+
+    // Navigate to details page
+    const goToBookDetails = (id) => {
+        navigate(`/books/${id}`);
+    }
     return (
-        <div className='flex flex-col items-center mt-10'>
-            <h1 className='text-2xl text-blue-600'>Latest Books Section</h1>
+        <div className='flex flex-col mt-10 mb-10 '>
+            <h1 className='text-3xl text-blue-600 mb-6 text-center font-bold'>Latest Books Section</h1>
+
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
+                {books
+                    .filter(book => book.status === "published")
+                    .slice(0, 6) // 🔥 at most 6 books
+                    .map((book) => (
+                        <div
+                            key={book._id}
+                            className="bg-white shadow-lg rounded-xl p-4 cursor-pointer hover:shadow-2xl transition"
+                            onClick={() => goToBookDetails(book._id)}
+                        >
+                            <img
+                                src={book.imageURL}
+                                alt={book.name}
+                                className="w-full h-48 object-cover rounded-lg mb-4"
+                            />
+                            <h3 className="text-xl font-semibold">{book.name}</h3>
+                            <p className="text-gray-600">{book.author}</p>
+                            <p className="mt-2 font-bold">Price: ₹{book.price}</p>
+                        </div>
+                    ))}
+            </div>
         </div>
+
     );
 };
 

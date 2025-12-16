@@ -10,7 +10,7 @@ import Testimonials from '../Component/testimonials';
 const Home = () => {
 
     return (
-        <div className="p-6 min-h-[60vh] flex flex-col items-center justify-center">
+        <div className="p-6 min-h-[60vh] flex flex-col  justify-center">
             <Sliders></Sliders>
             <LatestBooksSection></LatestBooksSection>
             <CoverageSection></CoverageSection>
