@@ -1,79 +1,99 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
-import { AuthContext } from '../Provider/AuthProvider';
-import { toast } from 'react-toastify';
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { AuthContext } from "../Provider/AuthProvider";
+import { toast } from "react-toastify";
 
 const BookDetails = () => {
     const { user, role } = useContext(AuthContext);
     const { id } = useParams();
-    const [book, setBook] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [modalOpen, setModalOpen] = useState(false);
-    const [error, setError] = useState('');
-    const [isInWishlist, setIsInWishlist] = useState(false);
     const navigate = useNavigate();
 
+    const [book, setBook] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [isInWishlist, setIsInWishlist] = useState(false);
+
+    const [userHasOrdered, setUserHasOrdered] = useState(false);
+    const [userRating, setUserRating] = useState(0);
+    const [averageRating, setAverageRating] = useState(null);
+
+    /* ================= Fetch Book ================= */
     useEffect(() => {
         const fetchBook = async () => {
             try {
                 const res = await axios.get(`http://localhost:4000/books/${id}`);
                 setBook(res.data);
-                setLoading(false);
             } catch (err) {
-                console.error(err);
-                setError('Failed to fetch book details');
+                setError("Failed to fetch book details");
+            } finally {
                 setLoading(false);
             }
         };
         fetchBook();
     }, [id]);
 
+    /* ================= Wishlist Check ================= */
     useEffect(() => {
+        if (!user) return;
         const checkWishlist = async () => {
-            if (user) {
-                try {
-                    const res = await axios.get(`http://localhost:4000/wishlist/id?userEmail=${user.email}&bookId=${id}`);
-                    setIsInWishlist(res.data.length > 0);
-                } catch (err) {
-                    console.error(err);
-                }
+            try {
+                const res = await axios.get(
+                    `http://localhost:4000/wishlist/id?userEmail=${user.email}&bookId=${id}`
+                );
+                setIsInWishlist(res.data.length > 0);
+            } catch (err) {
+                console.error(err);
             }
         };
         checkWishlist();
     }, [user, id]);
 
-    const handleOrderSubmit = async (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const phone = form.phone.value;
-        const address = form.address.value;
-
-        const orderData = {
-            bookId: book._id,
-            bookName: book.name,
-            userName: user?.displayName,
-            userEmail: user?.email,
-            librarianEmail: book.librarianEmail,
-            phone,
-            address,
-            status: "pending",
-            paymentStatus: "unpaid",
-            createdAt: new Date()
+    /* ================= Order Check ================= */
+    useEffect(() => {
+        if (!user) return;
+        const checkOrder = async () => {
+            try {
+                const res = await axios.get(
+                    `http://localhost:4000/my-orders?email=${user.email}`
+                );
+                const ordered = res.data.some(o => o.bookId === id);
+                setUserHasOrdered(ordered);
+            } catch (err) {
+                console.error(err);
+            }
         };
+        checkOrder();
+    }, [user, id]);
 
-        try {
-            await axios.post("http://localhost:4000/orders", orderData);
-            toast.success("Order placed successfully!");
-            setModalOpen(false);
-            form.reset(); // optional
-            navigate("/dashboard/orders");
-        } catch (error) {
-            console.error(error);
-            alert("Failed to place order");
-        }
-    };
+    /* ================= Fetch Ratings ================= */
+    useEffect(() => {
+        const fetchRatings = async () => {
+            try {
+                const res = await axios.get(
+                    `http://localhost:4000/ratings/${id}`
+                );
 
+                setAverageRating(res.data.averageRating);
+
+                if (user) {
+                    const myRating = res.data.ratings.find(
+                        r => r.userEmail === user.email
+                    );
+                    if (myRating) {
+                        setUserRating(myRating.rating);
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchRatings();
+    }, [id, user]);
+
+    /* ================= Wishlist Toggle ================= */
     const handleWishlistToggle = async () => {
         if (!user) {
             toast.error("Please login first");
@@ -82,165 +102,181 @@ const BookDetails = () => {
 
         try {
             if (isInWishlist) {
-                // Remove from wishlist
-                await axios.delete(`http://localhost:4000/wishlist/${id}?userEmail=${user.email}`);
-                toast.success("Removed from wishlist 💔");
+                await axios.delete(
+                    `http://localhost:4000/wishlist/${id}?userEmail=${user.email}`
+                );
                 setIsInWishlist(false);
+                toast.success("Removed from wishlist 💔");
             } else {
-                // Add to wishlist
-                const wishlistData = {
+                await axios.post("http://localhost:4000/wishlist", {
                     bookId: book._id,
                     bookName: book.name,
                     author: book.author,
                     price: book.price,
                     imageURL: book.imageURL,
                     userEmail: user.email,
-                    createdAt: new Date()
-                };
-                await axios.post("http://localhost:4000/wishlist", wishlistData);
-                toast.success("Added to wishlist ❤️");
+                    createdAt: new Date(),
+                });
                 setIsInWishlist(true);
+                toast.success("Added to wishlist ❤️");
             }
-        } catch (error) {
-            console.error(error);
+        } catch (err) {
             toast.error("Wishlist action failed");
         }
     };
 
-    if (loading) return <p className="text-center mt-20 text-lg">Loading book details...</p>;
+    /* ================= Rating Submit ================= */
+    const handleRatingSubmit = async (star) => {
+        if (!user) {
+            toast.error("Please login first");
+            return;
+        }
+
+        try {
+            await axios.post("http://localhost:4000/ratings", {
+                bookId: book._id,
+                userEmail: user.email,
+                rating: star,
+            });
+
+            setUserRating(star);
+            toast.success(`You rated ${star} ⭐`);
+
+            // Refresh average rating
+            const res = await axios.get(`http://localhost:4000/ratings/${id}`);
+            setAverageRating(res.data.averageRating);
+        } catch (err) {
+            toast.error("Failed to submit rating");
+        }
+    };
+
+
+    /* ================= Order Submit ================= */
+    const handleOrderSubmit = async (e) => {
+        e.preventDefault();
+        const form = e.target;
+
+        try {
+            await axios.post("http://localhost:4000/orders", {
+                bookId: book._id,
+                bookName: book.name,
+                userName: user.displayName,
+                userEmail: user.email,
+                librarianEmail: book.librarianEmail,
+                phone: form.phone.value,
+                address: form.address.value,
+                status: "pending",
+                paymentStatus: "unpaid",
+                createdAt: new Date(),
+            });
+
+            toast.success("Order placed successfully!");
+            setModalOpen(false);
+            navigate("/dashboard/orders");
+        } catch (err) {
+            toast.error("Failed to place order");
+        }
+    };
+
+    if (loading) return <p className="text-center mt-20">Loading...</p>;
     if (error) return <p className="text-center mt-20 text-red-500">{error}</p>;
-    if (!book) return <p className="text-center mt-20 text-gray-500">Book not found</p>;
+    if (!book) return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 py-10 px-4 md:px-10 flex justify-center">
-            <div className="max-w-6xl mx-auto mt-12 bg-white rounded-3xl shadow-2xl overflow-hidden flex md:flex-row flex-col items-center">
+        <div className="min-h-screen bg-gray-50 py-10 px-4 flex justify-center">
 
-                {/* Book Image */}
-                <div className="md:w-1/2 w-full h-52 md:h-64 relative group">
+            <div className="max-w-6xl bg-white rounded-3xl shadow-2xl flex md:flex-row flex-col overflow-hidden">
+
+                {/* Image */}
+                <div className="md:w-1/2 h-64 relative">
                     <img
                         src={book.imageURL}
                         alt={book.name}
-                        className="w-full h-full object-cover md:rounded-l-3xl transition-transform duration-500 group-hover:scale-105"
+                        className="w-full h-full object-cover"
                     />
-
-                    {/* Price Badge */}
-                    <span className="absolute top-3 left-3 bg-blue-600 text-white font-bold px-3 py-1 rounded-lg shadow">
+                    <span className="absolute top-3 left-3 bg-blue-600 text-white px-3 py-1 rounded">
                         ₹{book.price}
                     </span>
                 </div>
 
-                {/* Book Info */}
-                <div className="md:w-1/2 w-full p-6 flex flex-col justify-start">
-                    <div>
-                        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">{book.name}</h2>
-                        <p className="text-gray-500 mb-2">✍️ {book.author}</p>
-                        <p className="text-gray-700 text-sm md:text-base line-clamp-5 mb-4">
-                            {book.description || "No description available."}
-                        </p>
+                {/* Details */}
+                <div className="md:w-1/2 p-6 flex flex-col">
 
-                        {/* Buttons */}
-                        {role === "User" && (
-                            <div className="flex gap-3 mb-4">
-                                <button
-                                    onClick={() => setModalOpen(true)}
-                                    className="flex-1 py-2 md:py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow hover:from-indigo-600 hover:to-blue-600 transition"
-                                >
-                                    Order Now
-                                </button>
+                    <h2 className="text-3xl font-bold">{book.name}</h2>
+                    <p className="text-gray-500 mt-1">✍️ {book.author}</p>
+                    <p className="mt-3 text-gray-700">{book.description}</p>
 
-                                <button
-                                    onClick={handleWishlistToggle}
-                                    className={`flex-1 py-2 md:py-3 rounded-xl font-semibold transition
-                                    ${isInWishlist ? 'bg-red-600 text-white hover:bg-red-700 border-none' 
-                                                   : 'border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white'}`}
-                                >
-                                    {isInWishlist ? 'Remove from Wishlist 💔' : 'Add to Wishlist ❤️'}
-                                </button>
+                    {role === "User" && (
+                        <div className="flex gap-3 mt-5">
+                            <button
+                                onClick={() => setModalOpen(true)}
+                                className="flex-1 py-2 bg-blue-600 text-white rounded-xl"
+                            >
+                                Order Now
+                            </button>
+                            <button
+                                onClick={handleWishlistToggle}
+                                className={`flex-1 py-2 rounded-xl ${isInWishlist
+                                    ? "bg-red-600 text-white"
+                                    : "border border-blue-600 text-blue-600"
+                                    }`}
+                            >
+                                {isInWishlist ? "Remove 💔" : "Wishlist ❤️"}
+                            </button>
+                        </div>
+                    )}
+
+                    {/* ===== Rating ===== */}
+                    <div className="mt-6 border-t pt-4">
+                        <h3 className="font-bold mb-2">Rate this Book</h3>
+
+                        {userHasOrdered ? (
+                            <div className="flex gap-2 text-3xl">
+                                {[1, 2, 3, 4, 5].map(star => (
+                                    <button key={star} onClick={() => handleRatingSubmit(star)}>
+                                        <span className={star <= userRating ? "text-yellow-400" : "text-gray-300"}>
+                                            ★
+                                        </span>
+                                    </button>
+                                ))}
                             </div>
+                        ) : (
+                            <p className="text-sm text-gray-500">
+                                Order this book to give rating
+                            </p>
                         )}
+
+                        <p className="mt-2 text-sm text-gray-600">
+                            ⭐ Average Rating:{" "}
+                            <span className="font-semibold">
+                                {averageRating ?? "N/A"}
+                            </span>
+                        </p>
                     </div>
                 </div>
             </div>
 
-            {/* Modal */}
+            {/* ===== Order Modal ===== */}
             {modalOpen && (
-                <div className="fixed inset-0 flex justify-center items-center z-50 pointer-events-none">
-                    <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl pointer-events-auto">
-
-                        <h2 className="text-2xl font-bold mb-5 text-center">Place Your Order</h2>
-
-                        <form onSubmit={handleOrderSubmit} className="space-y-4">
-
-                            {/* Name */}
-                            <div className="flex flex-col">
-                                <label className="font-semibold mb-1">Name</label>
-                                <input
-                                    name="name"
-                                    type="text"
-                                    readOnly
-                                    defaultValue={user?.displayName || ""}
-                                    className="border rounded px-3 py-2 bg-gray-100"
-                                />
-                            </div>
-
-                            {/* Email */}
-                            <div className="flex flex-col">
-                                <label className="font-semibold mb-1">Email</label>
-                                <input
-                                    name="email"
-                                    type="email"
-                                    readOnly
-                                    defaultValue={user?.email || ""}
-                                    className="border rounded px-3 py-2 bg-gray-100"
-                                />
-                            </div>
-
-                            {/* Phone */}
-                            <div className="flex flex-col">
-                                <label className="font-semibold mb-1">Phone Number</label>
-                                <input
-                                    name="phone"
-                                    type="text"
-                                    placeholder="Enter phone number"
-                                    required
-                                    className="border rounded px-3 py-2"
-                                />
-                            </div>
-
-                            {/* Address */}
-                            <div className="flex flex-col">
-                                <label className="font-semibold mb-1">Address</label>
-                                <textarea
-                                    name="address"
-                                    placeholder="Enter address"
-                                    required
-                                    rows={3}
-                                    className="border rounded px-3 py-2"
-                                />
-                            </div>
-
-                            {/* Buttons */}
-                            <div className="flex justify-end gap-3 pt-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setModalOpen(false)}
-                                    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                                >
-                                    Place Order
+                <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
+                    <div className="bg-white p-6 rounded-xl w-full max-w-md">
+                        <h2 className="text-xl font-bold mb-4 text-center">Place Order</h2>
+                        <form onSubmit={handleOrderSubmit} className="space-y-3">
+                            <input readOnly value={user.displayName} className="w-full border p-2" />
+                            <input readOnly value={user.email} className="w-full border p-2" />
+                            <input name="phone" placeholder="Phone" required className="w-full border p-2" />
+                            <textarea name="address" placeholder="Address" required className="w-full border p-2" />
+                            <div className="flex justify-end gap-2">
+                                <button type="button" onClick={() => setModalOpen(false)}>Cancel</button>
+                                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+                                    Order
                                 </button>
                             </div>
-
                         </form>
                     </div>
                 </div>
             )}
+
         </div>
     );
 };

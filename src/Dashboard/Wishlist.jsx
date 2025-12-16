@@ -2,11 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../Provider/AuthProvider";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Wishlist = () => {
     const { user } = useContext(AuthContext);
     const [wishlist, setWishlist] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!user) {
@@ -44,6 +46,10 @@ const Wishlist = () => {
         }
     };
 
+    const handleCardClick = (bookId) => {
+        navigate(`/books/${bookId}`);
+    };
+
     if (!user) return <p className="text-center mt-20 text-lg">Please login to see your wishlist.</p>;
     if (loading) return <p className="text-center mt-20 text-lg">Loading wishlist...</p>;
     if (wishlist.length === 0) return <p className="text-center mt-20 text-gray-500">Your wishlist is empty 😔</p>;
@@ -56,7 +62,8 @@ const Wishlist = () => {
                 {wishlist.map(item => (
                     <div
                         key={item._id}
-                        className="bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col transform transition hover:scale-105 hover:shadow-2xl"
+                        onClick={() => handleCardClick(item.bookId)}
+                        className="bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col transform transition hover:scale-105 hover:shadow-2xl cursor-pointer"
                     >
                         {/* Book Image */}
                         <div className="relative h-60">
@@ -78,7 +85,10 @@ const Wishlist = () => {
                                 <p className="text-gray-500 mb-3">✍️ {item.author}</p>
                             </div>
                             <button
-                                onClick={() => handleRemove(item.bookId)}
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Prevent card click
+                                    handleRemove(item.bookId);
+                                }}
                                 className="mt-4 py-2 rounded-2xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors shadow-md"
                             >
                                 Remove 💔
@@ -88,7 +98,6 @@ const Wishlist = () => {
                 ))}
             </div>
         </div>
-
     );
 };
 
