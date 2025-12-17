@@ -95,35 +95,49 @@ const BookDetails = () => {
 
     /* ================= Wishlist Toggle ================= */
     const handleWishlistToggle = async () => {
-        if (!user) {
-            toast.error("Please login first");
-            return;
-        }
+  if (!user) {
+    toast.error("Please login first");
+    return;
+  }
 
-        try {
-            if (isInWishlist) {
-                await axios.delete(
-                    `http://localhost:4000/wishlist/${id}?userEmail=${user.email}`
-                );
-                setIsInWishlist(false);
-                toast.success("Removed from wishlist 💔");
-            } else {
-                await axios.post("http://localhost:4000/wishlist", {
-                    bookId: book._id,
-                    bookName: book.name,
-                    author: book.author,
-                    price: book.price,
-                    imageURL: book.imageURL,
-                    userEmail: user.email,
-                    createdAt: new Date(),
-                });
-                setIsInWishlist(true);
-                toast.success("Added to wishlist ❤️");
-            }
-        } catch (err) {
-            toast.error("Wishlist action failed");
+  try {
+    // Get Firebase ID token
+    const token = await user.getIdToken(); // 🔑 This is the correct token
+
+    if (isInWishlist) {
+      await axios.delete(
+        `http://localhost:4000/wishlist/${book._id}?userEmail=${user.email}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }, // ✅ send the token
         }
-    };
+      );
+      setIsInWishlist(false);
+      toast.success("Removed from wishlist 💔");
+    } else {
+      await axios.post(
+        "http://localhost:4000/wishlist",
+        {
+          bookId: book._id.toString(),
+          bookName: book.name,
+          author: book.author,
+          price: book.price,
+          imageURL: book.imageURL,
+          userEmail: user.email,
+          createdAt: new Date(),
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }, // ✅ send the token
+        }
+      );
+      setIsInWishlist(true);
+      toast.success("Added to wishlist ❤️");
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("Wishlist action failed");
+  }
+};
+
 
     /* ================= Rating Submit ================= */
     const handleRatingSubmit = async (star) => {

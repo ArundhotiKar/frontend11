@@ -17,6 +17,9 @@ import EditBook from "../Dashboard/EditBook";
 import UserManagement from "../Dashboard/UserManagement";
 import ManageBooks from "../Dashboard/ManageBooks";
 import Mywishlist from "../Dashboard/Wishlist";
+import Main from "../Dashboard/Main";
+import AdminRoutes from "./AdminRoutes";
+import LibrarianRoutes from "./LibrarianRoutes";
 
 const router = createBrowserRouter([
   {
@@ -41,7 +44,7 @@ const router = createBrowserRouter([
       },
       {
         path:"/books/:id",
-        element: <BookDetails></BookDetails>
+        element:<PrivateRoute><BookDetails></BookDetails></PrivateRoute>
       }
       
     ]
@@ -56,6 +59,10 @@ const router = createBrowserRouter([
     ),
     children: [
       {
+        path:"",
+        element:<Main></Main>
+      },
+      {
         path: "profile",
         element: <MyProfile></MyProfile>
       },
@@ -65,15 +72,15 @@ const router = createBrowserRouter([
       },
       {
         path: "add-book",
-        element: <AddBook></AddBook>
+        element:<LibrarianRoutes><AddBook></AddBook></LibrarianRoutes>
       },
       {
         path:"my-books",
-        element:<MyBooks></MyBooks>
+        element:<LibrarianRoutes><MyBooks></MyBooks></LibrarianRoutes>
       },
       {
         path:"librarians-orders",
-        element:<LibrarianOrders></LibrarianOrders>
+        element:<LibrarianRoutes><LibrarianOrders></LibrarianOrders></LibrarianRoutes>
       },
       {
         path: "edit-book/:id",
@@ -81,11 +88,11 @@ const router = createBrowserRouter([
       },
       {
          path:"all-users",
-         element: <UserManagement></UserManagement>
+         element:<AdminRoutes><UserManagement></UserManagement></AdminRoutes>
       },
       {
         path:"manage-books",
-        element: <ManageBooks></ManageBooks>
+        element:<AdminRoutes><ManageBooks></ManageBooks></AdminRoutes>
       },
       {
         path: "wishlist",

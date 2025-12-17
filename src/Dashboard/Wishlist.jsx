@@ -18,9 +18,13 @@ const Wishlist = () => {
 
         const fetchWishlist = async () => {
             try {
+                const token = await user.getIdToken(); // 🔑 get Firebase token
                 const res = await axios.get(
-                    `http://localhost:4000/wishlist?userEmail=${user.email}`
-                );
+                `http://localhost:4000/wishlist?userEmail=${user.email}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
                 setWishlist(res.data);
                 setLoading(false);
             } catch (err) {

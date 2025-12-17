@@ -4,8 +4,10 @@ import { AuthContext } from '../Provider/AuthProvider';
 import { Eye, EyeOff } from 'lucide-react';
 import { updateProfile } from "firebase/auth";
 import axios from "axios";
+import useAxiosSecure from '../hook/useAxiosSecure';
 
 const Register = () => {
+    const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const { createUser, setUser, setRole } = useContext(AuthContext);
@@ -62,7 +64,7 @@ const Register = () => {
         });
 
         // Send user to backend
-        await axios.post('http://localhost:4000/users', { email, password, name, imageURL, role });
+        await axiosSecure.post('/users', { email, password, name, imageURL, role });
 
         // Immediately fetch role from backend
         const roleRes = await fetch(`http://localhost:4000/users/role/${email}`);
