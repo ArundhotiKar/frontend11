@@ -20,6 +20,8 @@ import Mywishlist from "../Dashboard/Wishlist";
 import Main from "../Dashboard/Main";
 import AdminRoutes from "./AdminRoutes";
 import LibrarianRoutes from "./LibrarianRoutes";
+import PaymentPage from "../Dashboard/PaymentPage";
+import PaymentSuccess from "../pages/PaymentSuccess";
 
 const router = createBrowserRouter([
   {
@@ -43,10 +45,18 @@ const router = createBrowserRouter([
         element: <BooksList></BooksList>
       },
       {
-        path:"/books/:id",
-        element:<PrivateRoute><BookDetails></BookDetails></PrivateRoute>
+        path: "/books/:id",
+        element: <PrivateRoute><BookDetails></BookDetails></PrivateRoute>
+      },
+      {
+        path: 'pay-now',
+        element:<PrivateRoute><PaymentPage></PaymentPage></PrivateRoute>
+      },
+      {
+        path: "payment-success",
+        element:<PaymentSuccess></PaymentSuccess>
       }
-      
+
     ]
 
   },
@@ -59,8 +69,8 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path:"",
-        element:<Main></Main>
+        path: "",
+        element: <Main></Main>
       },
       {
         path: "profile",
@@ -72,32 +82,34 @@ const router = createBrowserRouter([
       },
       {
         path: "add-book",
-        element:<LibrarianRoutes><AddBook></AddBook></LibrarianRoutes>
+        element: <LibrarianRoutes><AddBook></AddBook></LibrarianRoutes>
       },
       {
-        path:"my-books",
-        element:<LibrarianRoutes><MyBooks></MyBooks></LibrarianRoutes>
+        path: "my-books",
+        element: <LibrarianRoutes><MyBooks></MyBooks></LibrarianRoutes>
       },
       {
-        path:"librarians-orders",
-        element:<LibrarianRoutes><LibrarianOrders></LibrarianOrders></LibrarianRoutes>
+        path: "librarians-orders",
+        element: <LibrarianRoutes><LibrarianOrders></LibrarianOrders></LibrarianRoutes>
       },
       {
         path: "edit-book/:id",
         element: <EditBook />,
       },
       {
-         path:"all-users",
-         element:<AdminRoutes><UserManagement></UserManagement></AdminRoutes>
+        path: "all-users",
+        element: <AdminRoutes><UserManagement></UserManagement></AdminRoutes>
       },
       {
-        path:"manage-books",
-        element:<AdminRoutes><ManageBooks></ManageBooks></AdminRoutes>
+        path: "manage-books",
+        element: <AdminRoutes><ManageBooks></ManageBooks></AdminRoutes>
       },
       {
         path: "wishlist",
-        element:<Mywishlist></Mywishlist>
-      }
+        element: <Mywishlist></Mywishlist>
+      },
+
+
     ]
   }
 ]);

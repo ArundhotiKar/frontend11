@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../Provider/AuthProvider";
+import { useNavigate } from "react-router";
 const MyOrders = () => {
   const { user } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
-  
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user?.email) return;
@@ -31,18 +32,8 @@ const MyOrders = () => {
   };
 
 
-  const payNow = async (id) => {
-    // 👉 normally navigate to payment page
-    // navigate(`/payment/${id}`);
-
-    // demo direct payment success
-    //await axios.patch(`http://localhost:4000/orders/pay/${id}`);
-
-    setOrders(prev =>
-      prev.map(order =>
-        order._id === id ? { ...order, paymentStatus: "paid" } : order
-      )
-    );
+  const payNow = (orderId, price) => {
+    navigate("/pay-now", { state: { orderId, price } });
   };
 
   return (
@@ -99,7 +90,7 @@ const MyOrders = () => {
               <td className="border p-2 space-x-2">
 
                 {/* Buttons ONLY if order is pending */}
-                {order.status === "pending" && (
+                {order.status === "pending" && order.paymentStatus !== "paid" && (
                   <>
                     <button
                       onClick={() => cancelOrder(order._id)}
@@ -108,16 +99,15 @@ const MyOrders = () => {
                       Cancel
                     </button>
 
-                    {order.paymentStatus === "unpaid" && (
-                      <button
-                        onClick={() => payNow(order._id)}
-                        className="px-3 py-1 bg-blue-600 text-white rounded"
-                      >
-                        Pay Now
-                      </button>
-                    )}
+                    <button
+                      onClick={() => payNow(order._id, order.price)}
+                      className="px-3 py-1 bg-blue-600 text-white rounded"
+                    >
+                      Pay Now
+                    </button>
                   </>
                 )}
+
 
               </td>
 

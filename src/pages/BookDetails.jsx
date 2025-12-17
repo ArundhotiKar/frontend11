@@ -174,6 +174,7 @@ const BookDetails = () => {
             await axios.post("http://localhost:4000/orders", {
                 bookId: book._id,
                 bookName: book.name,
+                price: parseInt(book.price),
                 userName: user.displayName,
                 userEmail: user.email,
                 librarianEmail: book.librarianEmail,
