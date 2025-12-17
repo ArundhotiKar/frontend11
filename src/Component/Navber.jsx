@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Menu, X, Book, LogOut } from "lucide-react";
 import { AuthContext } from "../Provider/AuthProvider";
 
+
 const Navber = () => {
   const { user, logOut } = useContext(AuthContext);
   const [open, setOpen] = useState(false);

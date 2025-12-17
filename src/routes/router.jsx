@@ -22,6 +22,7 @@ import AdminRoutes from "./AdminRoutes";
 import LibrarianRoutes from "./LibrarianRoutes";
 import PaymentPage from "../Dashboard/PaymentPage";
 import PaymentSuccess from "../pages/PaymentSuccess";
+import InvoicesPage from "../Dashboard/InvoicesPage";
 
 const router = createBrowserRouter([
   {
@@ -108,6 +109,10 @@ const router = createBrowserRouter([
         path: "wishlist",
         element: <Mywishlist></Mywishlist>
       },
+      {
+        path: "invoices",
+        element:<InvoicesPage></InvoicesPage>
+      }
 
 
     ]
