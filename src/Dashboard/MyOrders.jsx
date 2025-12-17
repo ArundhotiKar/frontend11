@@ -89,8 +89,7 @@ const MyOrders = () => {
 
               <td className="border p-2 space-x-2">
 
-                {/* Buttons ONLY if order is pending */}
-                {order.status === "pending" && order.paymentStatus !== "paid" && (
+                { order.paymentStatus !== "paid" && (
                   <>
                     <button
                       onClick={() => cancelOrder(order._id)}
