@@ -24,7 +24,7 @@ const BookDetails = () => {
     useEffect(() => {
         const fetchBook = async () => {
             try {
-                const res = await axios.get(`http://localhost:4000/books/${id}`);
+                const res = await axios.get(`https://backend11-kappa.vercel.app/books/${id}`);
                 setBook(res.data);
             } catch (err) {
                 setError("Failed to fetch book details");
@@ -41,7 +41,7 @@ const BookDetails = () => {
         const checkWishlist = async () => {
             try {
                 const res = await axios.get(
-                    `http://localhost:4000/wishlist/id?userEmail=${user.email}&bookId=${id}`
+                    `https://backend11-kappa.vercel.app/wishlist/id?userEmail=${user.email}&bookId=${id}`
                 );
                 setIsInWishlist(res.data.length > 0);
             } catch (err) {
@@ -57,7 +57,7 @@ const BookDetails = () => {
         const checkOrder = async () => {
             try {
                 const res = await axios.get(
-                    `http://localhost:4000/my-orders?email=${user.email}`
+                    `https://backend11-kappa.vercel.app/my-orders?email=${user.email}`
                 );
                 const ordered = res.data.some(o => o.bookId === id);
                 setUserHasOrdered(ordered);
@@ -73,7 +73,7 @@ const BookDetails = () => {
         const fetchRatings = async () => {
             try {
                 const res = await axios.get(
-                    `http://localhost:4000/ratings/${id}`
+                    `https://backend11-kappa.vercel.app/ratings/${id}`
                 );
 
                 setAverageRating(res.data.averageRating);
@@ -106,7 +106,7 @@ const BookDetails = () => {
 
     if (isInWishlist) {
       await axios.delete(
-        `http://localhost:4000/wishlist/${book._id}?userEmail=${user.email}`,
+        `https://backend11-kappa.vercel.app/wishlist/${book._id}?userEmail=${user.email}`,
         {
           headers: { Authorization: `Bearer ${token}` }, // ✅ send the token
         }
@@ -115,7 +115,7 @@ const BookDetails = () => {
       toast.success("Removed from wishlist 💔");
     } else {
       await axios.post(
-        "http://localhost:4000/wishlist",
+        "https://backend11-kappa.vercel.app/wishlist",
         {
           bookId: book._id.toString(),
           bookName: book.name,
@@ -147,7 +147,7 @@ const BookDetails = () => {
         }
 
         try {
-            await axios.post("http://localhost:4000/ratings", {
+            await axios.post("https://backend11-kappa.vercel.app/ratings", {
                 bookId: book._id,
                 userEmail: user.email,
                 rating: star,
@@ -157,7 +157,7 @@ const BookDetails = () => {
             toast.success(`You rated ${star} ⭐`);
 
             // Refresh average rating
-            const res = await axios.get(`http://localhost:4000/ratings/${id}`);
+            const res = await axios.get(`https://backend11-kappa.vercel.app/ratings/${id}`);
             setAverageRating(res.data.averageRating);
         } catch (err) {
             toast.error("Failed to submit rating");
@@ -171,7 +171,7 @@ const BookDetails = () => {
         const form = e.target;
 
         try {
-            await axios.post("http://localhost:4000/orders", {
+            await axios.post("https://backend11-kappa.vercel.app/orders", {
                 bookId: book._id,
                 bookName: book.name,
                 price: parseInt(book.price),

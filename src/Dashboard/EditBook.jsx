@@ -20,7 +20,7 @@ const EditBook = () => {
     // 📌 Fetch book by id
     useEffect(() => {
         axios
-            .get(`http://localhost:4000/books/${id}`)
+            .get(`https://backend11-kappa.vercel.app/books/${id}`)
             .then(res => {
                 setBook(res.data);
                 setLoading(false);
@@ -38,7 +38,7 @@ const EditBook = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        await axios.patch(`http://localhost:4000/books/edit/${id}`, book);
+        await axios.patch(`https://backend11-kappa.vercel.app/books/edit/${id}`, book);
         toast("Book updated successfully!");
         navigate("/dashboard/my-books");
     };

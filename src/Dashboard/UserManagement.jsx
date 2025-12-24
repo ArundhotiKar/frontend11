@@ -11,7 +11,7 @@ const UserManagement = () => {
   // Fetch all users from backend
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/users"); // adjust backend route if needed
+      const res = await axios.get("https://backend11-kappa.vercel.app/users"); // adjust backend route if needed
       setUsers(res.data);
     } catch (err) {
       console.error("Error fetching users:", err);
@@ -21,7 +21,7 @@ const UserManagement = () => {
   // Change user role
   const changeRole = async (id, role) => {
     try {
-      await axios.patch(`http://localhost:4000/users/${id}/role`, { role });
+      await axios.patch(`https://backend11-kappa.vercel.app/users/${id}/role`, { role });
       fetchUsers(); // refresh after update
     } catch (err) {
       console.error("Error updating role:", err);

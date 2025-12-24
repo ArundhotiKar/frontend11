@@ -67,7 +67,7 @@ const Register = () => {
         await axiosSecure.post('/users', { email, password, name, imageURL, role });
 
         // Immediately fetch role from backend
-        const roleRes = await fetch(`http://localhost:4000/users/role/${email}`);
+        const roleRes = await fetch(`https://backend11-kappa.vercel.app/users/role/${email}`);
         const roleData = await roleRes.json();
         setRole(roleData.role || null);
 

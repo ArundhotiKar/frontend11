@@ -14,7 +14,7 @@ const ManageBooks = () => {
 
   const fetchBooks = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/books");
+      const res = await axios.get("https://backend11-kappa.vercel.app/books");
       setBooks(res.data);
       setLoading(false);
     } catch {
@@ -25,7 +25,7 @@ const ManageBooks = () => {
   const togglePublish = async (book) => {
     try {
       const newStatus = book.status === "published" ? "unpublished" : "published";
-      await axios.patch(`http://localhost:4000/books/${book._id}`, { status: newStatus });
+      await axios.patch(`https://backend11-kappa.vercel.app/books/${book._id}`, { status: newStatus });
       toast.success(book.status === "published" ? "Book unpublished" : "Book published");
       setBooks((prev) =>
         prev.map((b) =>
@@ -51,7 +51,7 @@ const ManageBooks = () => {
     if (!result.isConfirmed) return;
 
     try {
-      await axios.delete(`http://localhost:4000/books/${id}`);
+      await axios.delete(`https://backend11-kappa.vercel.app/books/${id}`);
       Swal.fire({
         title: "Deleted!",
         text: "Book and related orders deleted",

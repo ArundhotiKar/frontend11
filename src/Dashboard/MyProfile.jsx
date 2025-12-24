@@ -26,7 +26,7 @@ const MyProfile = () => {
   const fetchProfile = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:4000/users/profile/${user.email}`
+        `https://backend11-kappa.vercel.app/users/profile/${user.email}`
       );
 
       setDbUser(res.data);
@@ -59,7 +59,7 @@ const MyProfile = () => {
       });
 
       await axios.patch(
-        `http://localhost:4000/users/profile/${user.email}`,
+        `https://backend11-kappa.vercel.app/users/profile/${user.email}`,
         { name, imageURL }
       );
 

@@ -11,12 +11,12 @@ const MyOrders = () => {
     if (!user?.email) return;
 
     axios
-      .get(`http://localhost:4000/my-orders?email=${user.email}`)
+      .get(`https://backend11-kappa.vercel.app/my-orders?email=${user.email}`)
       .then(res => setOrders(res.data));
   }, [user]);
 
   const cancelOrder = async (id) => {
-    await axios.patch(`http://localhost:4000/orders/cancel/${id}`);
+    await axios.patch(`https://backend11-kappa.vercel.app/orders/cancel/${id}`);
 
     setOrders(prev =>
       prev.map(order =>

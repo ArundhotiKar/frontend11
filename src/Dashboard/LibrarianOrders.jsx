@@ -24,7 +24,7 @@ const LibrarianOrders = () => {
     if (!user?.email) return;
 
     axios
-      .get(`http://localhost:4000/orders/librarian/${user.email}`)
+      .get(`https://backend11-kappa.vercel.app/orders/librarian/${user.email}`)
       .then(res => {
         setOrders(res.data);
         setLoading(false);
@@ -34,7 +34,7 @@ const LibrarianOrders = () => {
 
   // 🔁 Update Order Status
   const handleStatusChange = async (id, newStatus) => {
-    await axios.patch(`http://localhost:4000/orders/status/${id}`, {
+    await axios.patch(`https://backend11-kappa.vercel.app/orders/status/${id}`, {
       status: newStatus,
     });
 
@@ -50,7 +50,7 @@ const LibrarianOrders = () => {
     const confirmCancel = window.confirm("Are you sure you want to cancel?");
     if (!confirmCancel) return;
 
-    await axios.patch(`http://localhost:4000/orders/cancel/${id}`);
+    await axios.patch(`https://backend11-kappa.vercel.app/orders/cancel/${id}`);
 
     setOrders(prev =>
       prev.map(order =>

@@ -9,7 +9,7 @@ const BooksList = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get("http://localhost:4000/books")
+        axios.get("https://backend11-kappa.vercel.app/books")
             .then(res => {
                 setBooks(res.data);
             })

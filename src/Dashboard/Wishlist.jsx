@@ -20,7 +20,7 @@ const Wishlist = () => {
             try {
                 const token = await user.getIdToken(); // 🔑 get Firebase token
                 const res = await axios.get(
-                `http://localhost:4000/wishlist?userEmail=${user.email}`,
+                `https://backend11-kappa.vercel.app/wishlist?userEmail=${user.email}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -40,7 +40,7 @@ const Wishlist = () => {
     const handleRemove = async (bookId) => {
         try {
             await axios.delete(
-                `http://localhost:4000/wishlist/${bookId}?userEmail=${user.email}`
+                `https://backend11-kappa.vercel.app/wishlist/${bookId}?userEmail=${user.email}`
             );
             toast.success("Removed from wishlist 💔");
             setWishlist(prev => prev.filter(item => item.bookId !== bookId));

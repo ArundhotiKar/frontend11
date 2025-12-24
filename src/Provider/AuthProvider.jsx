@@ -14,7 +14,7 @@ const AuthProvider = ({ children }) => {
     // Fetch role from backend
     const getUserRole = async (email) => {
         try {
-            const res = await fetch(`http://localhost:4000/users/role/${email}`);
+            const res = await fetch(`https://backend11-kappa.vercel.app/users/role/${email}`);
             const data = await res.json();
             setRole(data.role || null);
         } catch (err) {

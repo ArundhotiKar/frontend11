@@ -25,20 +25,7 @@ const Login = () => {
     };
 
 
-    // 🔥 Google Login Function
-    const handleGoogleLogin = () => {
-        googleLogin()
-            .then(result => {
-                const loggedUser = result.user;
-                setUser(loggedUser);
-                //console.log(loggedUser.photoURL);
-                navigate('/');
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    };
-
+   
 
     return (
         <div className="flex items-center justify-center flex-col text-center min-h-screen mt-3">
@@ -86,16 +73,6 @@ const Login = () => {
                         className="mt-2 w-[290px] p-4 bg-[#DE5499] font-extrabold rounded-xl shadow-[3px_3px_0_0_#E99F4C] text-[15px] hover:opacity-90 focus:translate-y-1 focus:shadow-[1px_2px_0_0_#E99F4C]"
                     >
                         Login
-                    </button>
-
-                    {/* Google Login */}
-                    <button
-                        onClick={handleGoogleLogin}
-                        type="button"
-                        className="mt-3 w-[290px] p-3 bg-white border-2 border-[#264143] font-bold rounded-xl shadow-[3px_3px_0_0_#E99F4C] hover:bg-gray-100 flex items-center justify-center gap-2"
-                    >
-
-                        Login with Google
                     </button>
 
                     {/* Already have account */}
