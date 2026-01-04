@@ -1,16 +1,55 @@
-# React + Vite
+# 📚 BookCourier – Library-to-Home Delivery System
+---
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Project Overview
+BookCourier is an online library delivery platform that allows users to borrow and return books without physically visiting the library. Users can browse books, place orders for home delivery, add books to their wishlist, and leave reviews. Librarians can manage their book inventory and track orders, while admins can oversee users and books. The system is designed with a responsive, modern UI and secure authentication.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Live Demo
+[View Live Project](https://magical-brigadeiros-5b870a.netlify.app/)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Technologies Used
+- **Frontend:** React.js, Tailwind CSS, React Router 
+- **Backend:** Node.js, Express.js  
+- **Database:** MongoDB  
+- **Authentication:** Firebase Authentication  
+- **Deployment:** Vercel / Netlify  
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Dependencies
+- React.js  
+- React Router DOM  
+- Tailwind CSS  
+- Firebase  
+- Axios / TanStack Query (optional)  
+- Express.js  
+- Mongoose  
+- Dotenv  
+
+---
+
+## Core Features
+- User registration & login (Email/Password + Google Login)  
+- Browse all books, search, and sort by price  
+- Book details & order placement  
+- Wishlist & review/rating system  
+- User Dashboard: Orders, Profile, Invoices  
+- Librarian Dashboard: Add/Edit Books, Manage Orders  
+- Admin Dashboard: Manage Users & Books  
+- Responsive design with light/dark mode  
+- Animated sections & skeleton loaders  
+- JWT token for protected routes  
+
+---
+
+## Getting Started (Local Setup)
+
+### 1. Clone the Frontend repository
+```bash
+git clone https://github.com/ArundhotiKar/frontend11.git
+cd frontend11
+
