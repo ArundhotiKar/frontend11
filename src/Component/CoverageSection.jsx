@@ -19,12 +19,12 @@ const cities = [
 
 const CoverageSection = () => {
   return (
-    <section className="py-16 px-6 bg-gradient-to-b from-blue-50 to-white">
+    <section className="py-16 px-6 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto text-center mb-10">
-        <h2 className="text-4xl font-bold text-gray-800 mb-2">
+        <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">
           Our Delivery Cities
         </h2>
-        <p className="text-gray-600 text-lg">
+        <p className="text-gray-600 dark:text-gray-400 text-lg">
           We deliver books across multiple cities. Click on a city to see its location.
         </p>
       </div>
@@ -33,9 +33,11 @@ const CoverageSection = () => {
         {cities.map((city, index) => (
           <div
             key={index}
-            className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition duration-300"
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 
+                       rounded-2xl shadow-lg dark:shadow-none 
+                       hover:shadow-xl transform hover:scale-105 transition duration-300"
           >
-            <div className="h-40">
+            <div className="h-40 overflow-hidden rounded-t-2xl">
               <MapContainer
                 center={city.position}
                 zoom={10}
@@ -49,9 +51,12 @@ const CoverageSection = () => {
                 <Marker position={city.position} />
               </MapContainer>
             </div>
+
             <div className="p-4 text-center">
-              <h3 className="font-bold text-gray-800 text-lg">{city.name}</h3>
-              <p className="text-gray-600 text-sm mt-1">
+              <h3 className="font-bold text-gray-800 dark:text-gray-100 text-lg">
+                {city.name}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
                 Book delivery available here
               </p>
             </div>

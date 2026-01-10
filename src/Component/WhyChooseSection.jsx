@@ -18,24 +18,24 @@ const features = [
     icon: <Star size={32} className="text-white" />,
     title: "Wide Selection",
     description: "Find books from all genres, curated for your taste.",
-    color: "bg-yellow-500",
+    color: "bg-indigo-500",
   },
   {
     icon: <Clock size={32} className="text-white" />,
     title: "24/7 Support",
     description: "Our support team is always ready to assist you anytime.",
-    color: "bg-red-500",
+    color: "bg-blue-500",
   },
 ];
 
 const WhyChooseSection = () => {
   return (
-    <section className="py-16 px-6 bg-gray-50">
+    <section className="py-16 px-6 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto text-center mb-12">
-        <h2 className="text-4xl font-bold text-gray-800 mb-4">
+        <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4">
           Why Choose BookCourier?
         </h2>
-        <p className="text-gray-600 text-lg">
+        <p className="text-gray-600 dark:text-gray-400 text-lg">
           Discover why thousands of readers trust BookCourier for their book deliveries.
         </p>
       </div>
@@ -44,13 +44,27 @@ const WhyChooseSection = () => {
         {features.map((feature, index) => (
           <div
             key={index}
-            className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:scale-105 transform transition duration-300"
+            className="
+              bg-white dark:bg-gray-800
+              border border-gray-200 dark:border-gray-700
+              rounded-2xl shadow-lg dark:shadow-none
+              p-6 flex flex-col items-center text-center
+              hover:scale-105 transition duration-300
+            "
           >
-            <div className={`w-16 h-16 flex items-center justify-center rounded-full mb-4 ${feature.color}`}>
+            <div
+              className={`w-16 h-16 flex items-center justify-center rounded-full mb-4 ${feature.color}`}
+            >
               {feature.icon}
             </div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">{feature.title}</h3>
-            <p className="text-gray-600 text-sm">{feature.description}</p>
+
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
+              {feature.title}
+            </h3>
+
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
+              {feature.description}
+            </p>
           </div>
         ))}
       </div>

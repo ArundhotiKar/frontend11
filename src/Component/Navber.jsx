@@ -1,10 +1,25 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X, Book, LogOut } from "lucide-react";
 import { AuthContext } from "../Provider/AuthProvider";
 
 
 const Navber = () => {
+
+
+  const [theme, setTheme] = useState(localStorage.getItem("theme") ||
+    "light");
+  useEffect(() => {
+    const html = document.querySelector("html");
+    html.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+  const handleTheme = (checked) => {
+    setTheme(checked ? "dark" : "light");
+  };
+
+
+
   const { user, logOut } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
 
@@ -23,7 +38,8 @@ const Navber = () => {
   ];
 
   return (
-    <header className="">
+    <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+
       <div className="container mx-auto flex justify-between items-center py-3 px-6">
 
         {/* Logo */}
@@ -51,6 +67,13 @@ const Navber = () => {
               </Link>
             );
           })}
+
+          <input
+            onChange={(e) => handleTheme(e.target.checked)}
+            type="checkbox"
+            defaultChecked={localStorage.getItem('theme') === "dark"}
+            className="toggle" />
+
 
           {!user ? (
             <Link
@@ -107,6 +130,12 @@ const Navber = () => {
               </Link>
             );
           })}
+          <input
+            onChange={(e) => handleTheme(e.target.checked)}
+            type="checkbox"
+            defaultChecked={localStorage.getItem('theme') === "dark"}
+            className="toggle" />
+
 
           {!user ? (
             <Link

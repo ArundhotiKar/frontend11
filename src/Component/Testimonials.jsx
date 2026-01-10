@@ -26,12 +26,12 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <section className="py-24 px-6 bg-gray-50">
+    <section className="py-24 px-6 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto text-center mb-12">
-        <h2 className="text-4xl font-bold text-gray-800 mb-4">
+        <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4">
           What Our Customers Say
         </h2>
-        <p className="text-gray-600 text-lg">
+        <p className="text-gray-600 dark:text-gray-400 text-lg">
           Thousands of readers trust BookCourier for their book deliveries.
         </p>
       </div>
@@ -40,11 +40,17 @@ const Testimonials = () => {
         {testimonials.map((t, index) => (
           <motion.div
             key={index}
-            className="bg-white rounded-2xl p-6 shadow-lg hover:scale-105 transform transition duration-300"
+            className="
+              bg-white dark:bg-gray-800
+              border border-gray-200 dark:border-gray-700
+              rounded-2xl p-6
+              shadow-lg dark:shadow-none
+              hover:scale-105 transition duration-300
+            "
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: index * 0.2 }}
+            transition={{ duration: 0.6, delay: index * 0.15 }}
           >
             <div className="flex items-center mb-4">
               <img
@@ -52,9 +58,14 @@ const Testimonials = () => {
                 alt={t.name}
                 className="w-12 h-12 rounded-full mr-3 border-2 border-blue-500"
               />
-              <h4 className="font-semibold text-gray-800">{t.name}</h4>
+              <h4 className="font-semibold text-gray-800 dark:text-gray-100">
+                {t.name}
+              </h4>
             </div>
-            <p className="text-gray-600 text-sm">{t.text}</p>
+
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
+              {t.text}
+            </p>
           </motion.div>
         ))}
       </div>
