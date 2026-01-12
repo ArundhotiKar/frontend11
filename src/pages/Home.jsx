@@ -6,7 +6,10 @@ import CoverageSection from '../Component/CoverageSection';
 import WhyChooseSection from '../Component/WhyChooseSection';
 import AnimatedDelivery from '../Component/AnimatedDelivery';
 import Testimonials from '../Component/testimonials';
-
+import HowItWorks from '../Component/HowItWorks';
+import FAQ from '../Component/FAQ';
+import Statistics from '../Component/Statistics';
+import FeaturedAuthors from '../Component/FeaturedAuthors';
 const Home = () => {
 
     return (
@@ -17,6 +20,10 @@ const Home = () => {
             <WhyChooseSection></WhyChooseSection>
             <AnimatedDelivery></AnimatedDelivery>
             <Testimonials></Testimonials>
+            <HowItWorks></HowItWorks>
+            <Statistics></Statistics>
+            <FeaturedAuthors></FeaturedAuthors>
+            <FAQ></FAQ>
         </div>
     );
 };

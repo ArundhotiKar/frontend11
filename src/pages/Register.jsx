@@ -1,147 +1,184 @@
-import React, { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../Provider/AuthProvider';
-import { Eye, EyeOff } from 'lucide-react';
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../Provider/AuthProvider";
+import { Eye, EyeOff } from "lucide-react";
 import { updateProfile } from "firebase/auth";
 import axios from "axios";
-import useAxiosSecure from '../hook/useAxiosSecure';
+import useAxiosSecure from "../hook/useAxiosSecure";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const inputStyle =
+  "w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 " +
+  "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 " +
+  "placeholder-gray-400 dark:placeholder-gray-500 " +
+  "focus:ring-2 focus:ring-blue-500 outline-none";
 
 const Register = () => {
-    const axiosSecure = useAxiosSecure();
-    const navigate = useNavigate();
-    const [showPassword, setShowPassword] = useState(false);
-    const { createUser, setUser, setRole } = useContext(AuthContext);
+  const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const { createUser, setUser, setRole } = useContext(AuthContext);
 
-    const handleRegister = async (e) => {
+  const validatePassword = (password) => {
+    if (password.length < 6) return "Password must be at least 6 characters";
+    if (!/[A-Z]/.test(password)) return "Must contain an uppercase letter";
+    if (!/[a-z]/.test(password)) return "Must contain a lowercase letter";
+    return "";
+  };
+
+  const handleRegister = async (e) => {
     e.preventDefault();
     const form = e.target;
+
     const name = form.name.value;
-    const photoURL = form.photoURL.files[0];
-    const role = form.role.value;
     const email = form.email.value;
     const password = form.password.value;
+    const role = form.role.value;
+    const photo = form.photo.files[0];
 
-    // Password validation
-    const errorMessage = validatePassword(password);
-    if (errorMessage) {
-        alert(errorMessage);
-        return;
-    }
-
-    if (!photoURL) {
-        alert("Please upload a photo.");
-        return;
-    }
+    const error = validatePassword(password);
+    if (error) return toast.error(error);
+    if (!photo) return toast.error("Please upload a photo");
 
     try {
-        // Upload photo to IMGBB
-        const formData = new FormData();
-        formData.append("image", photoURL);
+      // Upload Image
+      const formData = new FormData();
+      formData.append("image", photo);
+      const imgRes = await axios.post(
+        "https://api.imgbb.com/1/upload?key=59eb7243643090e0bb38e5290a4b29e4",
+        formData
+      );
 
-        const res = await axios.post(
-            "https://api.imgbb.com/1/upload?key=59eb7243643090e0bb38e5290a4b29e4",
-            formData
-        );
+      const imageURL = imgRes.data.data.url;
 
-        if (!res.data.success) throw new Error("Image upload failed");
-        const imageURL = res.data.data.url;
+      // Create user
+      const result = await createUser(email, password);
 
-        // Create Firebase user
-        const result = await createUser(email, password);
-        const createdUser = result.user;
+      await updateProfile(result.user, {
+        displayName: name,
+        photoURL: imageURL,
+      });
 
-        // Update Firebase profile
-        await updateProfile(createdUser, {
-            displayName: name,
-            photoURL: imageURL,
-        });
+      setUser({ ...result.user, displayName: name, photoURL: imageURL });
 
-        // Update user in context
-        setUser({
-            ...createdUser,
-            displayName: name,
-            photoURL: imageURL
-        });
+      await axiosSecure.post("/users", {
+        email,
+        name,
+        imageURL,
+        role,
+      });
 
-        // Send user to backend
-        await axiosSecure.post('/users', { email, password, name, imageURL, role });
+      const roleRes = await fetch(
+        `https://backend11-kappa.vercel.app/users/role/${email}`
+      );
+      const roleData = await roleRes.json();
+      setRole(roleData.role);
 
-        // Immediately fetch role from backend
-        const roleRes = await fetch(`https://backend11-kappa.vercel.app/users/role/${email}`);
-        const roleData = await roleRes.json();
-        setRole(roleData.role || null);
+      toast.success("Account created successfully! 🎉");
+      form.reset();
 
-        form.reset();
-        navigate('/');
-
+      setTimeout(() => navigate("/"), 1500); // Navigate after toast
     } catch (err) {
-        console.error(err);
-        alert(err.message);
+      toast.error(err.message);
     }
-};
+  };
 
+  return (
+    <div className="min-h-screen flex items-center justify-center 
+    bg-gradient-to-br from-purple-100 to-blue-200 
+    dark:from-gray-900 dark:to-gray-800 px-4">
 
-    const validatePassword = (password) => {
-        const uppercase = /[A-Z]/;
-        const lowercase = /[a-z]/;
-        if (password.length < 6) return "Password must be at least 6 characters long.";
-        if (!uppercase.test(password)) return "Password must contain at least one uppercase letter.";
-        if (!lowercase.test(password)) return "Password must contain at least one lowercase letter.";
-        return "";
-    };
+      <div className="w-full max-w-md bg-white dark:bg-gray-900 
+      rounded-2xl shadow-2xl p-8">
 
-    return (
-        <div className="flex items-center justify-center flex-col text-center min-h-screen mt-3">
-            <div className="flex flex-col items-center justify-center bg-[#EDDCD9] border-2 border-[#264143] rounded-2xl shadow-[3px_4px_0_1px_#E99F4C] px-8 py-6">
-                <p className="text-[#264143] font-extrabold text-2xl ">REGISTER</p>
+        <h2 className="text-3xl font-bold text-center text-blue-600 dark:text-blue-400">
+          Create Account
+        </h2>
+        <p className="text-center text-gray-500 dark:text-gray-400 mt-1">
+          Join our book community 📚
+        </p>
 
-                <form onSubmit={handleRegister} className="mt-1">
-                    {/* Name */}
-                    <div className="flex flex-col items-start my-2">
-                        <label className="font-semibold mb-1">Name</label>
-                        <input name="name" type="text" placeholder="Enter your full name" className="outline-none border-2 border-[#264143] shadow-[3px_4px_0_1px_#E99F4C] w-[290px] p-3 rounded text-[15px]" />
-                    </div>
+        <form onSubmit={handleRegister} className="mt-6 space-y-4">
 
-                    {/* Email */}
-                    <div className="flex flex-col items-start my-1">
-                        <label className="font-semibold mb-1">Email</label>
-                        <input name="email" type="email" placeholder="Enter your email" className="outline-none border-2 border-[#264143] shadow-[3px_4px_0_1px_#E99F4C] w-[290px] p-3 rounded text-[15px]" />
-                    </div>
+          {/* Name */}
+          <input
+            name="name"
+            required
+            placeholder="Full Name"
+            className={inputStyle}
+          />
 
-                    {/* Password */}
-                    <div className="flex flex-col items-start my-1 relative">
-                        <label className="font-semibold mb-1">Password</label>
-                        <input name="password" type={showPassword ? "text" : "password"} placeholder="Enter your password" className="outline-none border-2 border-[#264143] shadow-[3px_4px_0_1px_#E99F4C] w-[290px] p-3 rounded text-[15px]" />
-                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-10 text-gray-500">
-                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </button>
-                    </div>
+          {/* Email */}
+          <input
+            name="email"
+            type="email"
+            required
+            placeholder="Email Address"
+            className={inputStyle}
+          />
 
-                    {/* Role Select */}
-                    <div className="flex flex-col items-start my-2">
-                        <label className="font-semibold mb-1">Choose Role</label>
-                        <select name="role" defaultValue="" required className="outline-none border-2 border-[#264143] shadow-[3px_4px_0_1px_#E99F4C] w-[290px] p-3 rounded text-[15px] bg-white cursor-pointer">
-                            <option value="" disabled>Select your role</option>
-                            <option value="User">User</option>
-                            <option value="Librarian">Librarian</option>
-                        </select>
-                    </div>
+          {/* Password */}
+          <div className="relative">
+            <input
+              name="password"
+              type={showPassword ? "text" : "password"}
+              required
+              placeholder="Password"
+              className={inputStyle}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-2.5 text-gray-500 dark:text-gray-400"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
 
-                    {/* Photo Upload */}
-                    <div className="flex flex-col items-start my-1">
-                        <label className="font-semibold mb-1">Photo</label>
-                        <input name="photoURL" type="file" className="outline-none border-2 border-[#264143] shadow-[3px_4px_0_1px_#E99F4C] w-[290px] p-3 rounded text-[15px]" />
-                    </div>
+          {/* Role */}
+          <select
+            name="role"
+            required
+            className={`${inputStyle} cursor-pointer`}
+          >
+            <option value="">Select Role</option>
+            <option value="User">User</option>
+            <option value="Librarian">Librarian</option>
+          </select>
 
-                    <button className="mt-2 w-[290px] p-4 bg-[#DE5499] font-extrabold rounded-xl text-[15px] hover:opacity-90">REGISTER</button>
+          {/* Photo */}
+          <input
+            type="file"
+            name="photo"
+            required
+            className={`${inputStyle} cursor-pointer`}
+          />
 
-                    <p className="mt-3 font-bold text-[#264143]">
-                        Already have an account? <Link to="/login" className="font-extrabold text-[#264143] underline">Login here</Link>
-                    </p>
-                </form>
-            </div>
-        </div>
-    );
+          {/* Button */}
+          <button className="w-full bg-blue-600 hover:bg-blue-700 
+          text-white py-2 rounded-lg font-semibold transition">
+            Register
+          </button>
+
+          {/* Login */}
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-blue-600 dark:text-blue-400 
+              font-semibold hover:underline"
+            >
+              Login
+            </Link>
+          </p>
+        </form>
+      </div>
+
+      {/* Toast Container */}
+      <ToastContainer position="top-center" autoClose={2000} />
+    </div>
+  );
 };
 
 export default Register;

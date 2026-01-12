@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 const ManageBooks = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [darkMode, setDarkMode] = useState(false); // dark mode toggle for styling
 
   useEffect(() => {
     fetchBooks();
@@ -14,11 +15,13 @@ const ManageBooks = () => {
 
   const fetchBooks = async () => {
     try {
+      setLoading(true);
       const res = await axios.get("https://backend11-kappa.vercel.app/books");
       setBooks(res.data);
-      setLoading(false);
     } catch {
       toast.error("Failed to load books");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,19 +68,27 @@ const ManageBooks = () => {
     }
   };
 
-  if (loading) return <p className="text-center mt-20 text-lg">Loading books...</p>;
+  if (loading)
+    return (
+      <div className={`flex justify-center items-center h-[60vh] ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin mb-2"></div>
+          <p className="text-lg font-semibold">Loading books...</p>
+        </div>
+      </div>
+    );
 
   return (
-    <div className="p-4 md:p-6">
+    <div className={`${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"} min-h-screen p-4 md:p-6 transition-colors duration-300`}>
       <h1 className="text-3xl font-bold mb-6 text-center">Manage Books</h1>
 
       {books.length === 0 && (
-        <p className="text-center text-gray-500 mt-10">No books found</p>
+        <p className="text-center text-gray-500 dark:text-gray-400 mt-10">No books found</p>
       )}
 
       <div className="overflow-x-auto rounded-lg shadow-lg">
-        <table className="min-w-full bg-white divide-y divide-gray-200">
-          <thead className="bg-gray-100 text-gray-700">
+        <table className={`${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"} min-w-full divide-y divide-gray-200`}>
+          <thead className={`${darkMode ? "bg-gray-700 text-gray-200" : "bg-gray-100 text-gray-700"}`}>
             <tr>
               <th className="px-4 py-3 text-left whitespace-nowrap">Cover</th>
               <th className="px-4 py-3 text-left">Title</th>
@@ -89,7 +100,7 @@ const ManageBooks = () => {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {books.map((book) => (
-              <tr key={book._id} className="hover:bg-gray-50 transition">
+              <tr key={book._id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                 <td className="px-4 py-3">
                   <img
                     src={book.imageURL}
@@ -99,13 +110,13 @@ const ManageBooks = () => {
                 </td>
                 <td className="px-4 py-3 font-semibold">{book.name}</td>
                 <td className="px-4 py-3">{book.author}</td>
-                <td className="px-4 py-3 text-gray-600">{book.librarianEmail}</td>
+                <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{book.librarianEmail}</td>
                 <td className="px-4 py-3 text-center">
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-semibold ${
                       book.status === "published"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-600"
+                        ? "bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300"
+                        : "bg-red-100 text-red-600 dark:bg-red-800 dark:text-red-300"
                     }`}
                   >
                     {book.status === "published" ? "Published" : "Unpublished"}
@@ -117,8 +128,8 @@ const ManageBooks = () => {
                       onClick={() => togglePublish(book)}
                       className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-medium transition ${
                         book.status === "published"
-                          ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
-                          : "bg-green-100 text-green-700 hover:bg-green-200"
+                          ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-300 dark:hover:bg-yellow-700"
+                          : "bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-800 dark:text-green-300 dark:hover:bg-green-700"
                       }`}
                     >
                       {book.status === "published" ? <EyeOff size={14} /> : <Eye size={14} />}
@@ -127,7 +138,7 @@ const ManageBooks = () => {
 
                     <button
                       onClick={() => deleteBook(book._id)}
-                      className="flex items-center gap-1 px-3 py-1 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition text-xs font-medium"
+                      className="flex items-center gap-1 px-3 py-1 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-800 dark:text-red-300 dark:hover:bg-red-700 transition text-xs font-medium"
                     >
                       <Trash2 size={14} /> Delete
                     </button>

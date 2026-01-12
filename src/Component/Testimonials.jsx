@@ -45,7 +45,7 @@ const Testimonials = () => {
               border border-gray-200 dark:border-gray-700
               rounded-2xl p-6
               shadow-lg dark:shadow-none
-              hover:scale-105 transition duration-300
+              hover:scale-105 transition duration-300 h-50
             "
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

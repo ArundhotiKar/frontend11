@@ -51,11 +51,15 @@ const router = createBrowserRouter([
       },
       {
         path: 'pay-now',
-        element:<PrivateRoute><PaymentPage></PaymentPage></PrivateRoute>
+        element: <PrivateRoute><PaymentPage></PaymentPage></PrivateRoute>
       },
       {
         path: "payment-success",
-        element:<PaymentSuccess></PaymentSuccess>
+        element: <PaymentSuccess />
+      },
+      {
+        path: "my-profile",
+        element: <MyProfile></MyProfile>
       }
 
     ]
@@ -111,7 +115,7 @@ const router = createBrowserRouter([
       },
       {
         path: "invoices",
-        element:<InvoicesPage></InvoicesPage>
+        element: <InvoicesPage></InvoicesPage>
       }
 
 

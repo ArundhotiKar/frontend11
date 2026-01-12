@@ -7,7 +7,7 @@ const BooksList = () => {
   const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("");
-  const [loading, setLoading] = useState(true); // <-- Loading state
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,19 +39,19 @@ const BooksList = () => {
       return 0;
     });
 
-  // --- Loading Spinner Component ---
+  // Loading Spinner
   const Spinner = () => (
     <div className="flex justify-center items-center py-32">
       <motion.div
         className="w-16 h-16 border-4 border-t-blue-500 border-b-blue-500 border-gray-300 rounded-full"
         animate={{ rotate: 360 }}
         transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-      ></motion.div>
+      />
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8">
+    <div className=" bg-gray-100 dark:bg-gray-600 p-8">
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-100">
         📚 All Books
       </h2>
@@ -97,36 +97,53 @@ const BooksList = () => {
           No books found.
         </p>
       ) : (
-        // Book Cards
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {filteredBooks.map((book) => (
-            <div
+            <motion.div
               key={book._id}
               onClick={() => goToBookDetails(book._id)}
+              whileHover={{ scale: 1.05 }}
               className="
-                bg-white dark:bg-gray-800
+                relative
+                bg-white/80 dark:bg-gray-800/80
+                backdrop-blur-md
                 border border-gray-200 dark:border-gray-700
+                rounded-2xl p-4 cursor-pointer
                 shadow-lg dark:shadow-none
-                rounded-xl p-4 cursor-pointer
-                hover:scale-105 transition duration-300
+                overflow-hidden
+                transition-all duration-300
+                h-72
               "
             >
-              <img
-                src={book.imageURL}
-                alt={book.name}
-                className="w-full h-48 object-cover rounded-lg mb-4"
-              />
+              {/* Book Image */}
+              <div className="relative w-full h-40 mb-3 rounded-xl overflow-hidden">
+                <img
+                  src={book.imageURL}
+                  alt={book.name}
+                  className="w-full h-full object-cover rounded-xl transform transition-transform duration-500 hover:scale-110"
+                />
+                <span className="absolute top-2 left-2 px-2 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full shadow">
+                  ₹{book.price}
+                </span>
+              </div>
 
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+              {/* Book Info */}
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1 truncate">
                 {book.name}
               </h3>
-
-              <p className="text-gray-600 dark:text-gray-400">{book.author}</p>
-
-              <p className="mt-2 font-bold text-green-600 dark:text-green-400">
-                Price: ₹{book.price}
+              <p className="text-gray-600 dark:text-gray-400 text-sm truncate">
+                {book.author}
               </p>
-            </div>
+
+              <div className="flex justify-between items-center mt-2 text-sm">
+                <span className="text-green-600 dark:text-green-400 font-medium">
+                  Available
+                </span>
+                <span className="text-yellow-500 font-medium text-xs">
+                  ★ {book.rating || 0}
+                </span>
+              </div>
+            </motion.div>
           ))}
         </div>
       )}

@@ -12,7 +12,7 @@ import {
   Settings,
   Heart,
 } from "lucide-react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { AuthContext } from "../Provider/AuthProvider";
 
 const Aside = () => {
@@ -20,14 +20,17 @@ const Aside = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // menu class
+  // Menu item class with active & hover styles for dark/light mode
   const menuItemClass = ({ isActive }) =>
-    `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#DE5499] ${isActive ? "bg-[#DE5499]" : ""
-    }`;
+    `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
+      ${isActive
+        ? "bg-pink-500 text-white dark:bg-pink-600 dark:text-white"
+        : "hover:bg-pink-200 hover:text-gray-900 dark:hover:bg-pink-500 dark:hover:text-white"
+      }`;
 
   return (
     <>
-      {/* Mobile Overlay */}
+      {/* Mobile overlay */}
       {mobileOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-30 md:hidden"
@@ -37,10 +40,11 @@ const Aside = () => {
 
       {/* Sidebar */}
       <div
-        className={`bg-[#264143] text-white h-screen fixed md:relative z-40
-        transition-all duration-300
-        ${sidebarOpen ? "md:w-64" : "md:w-20"}
-        ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+        className={`fixed md:relative z-40 h-screen transition-all duration-300
+          ${sidebarOpen ? "md:w-64" : "md:w-20"}
+          ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+           bg-gray-200 text-gray-900 dark:bg-gray-900 dark:text-gray-200
+        `}
       >
         {/* Header */}
         <div className="flex items-center p-4">
@@ -88,13 +92,13 @@ const Aside = () => {
                 {sidebarOpen && <span>Invoices</span>}
               </NavLink>
 
-              {/* ✅ Wishlist */}
               <NavLink to="/dashboard/wishlist" className={menuItemClass}>
                 <Heart size={20} />
                 {sidebarOpen && <span>My Wishlist</span>}
               </NavLink>
             </>
           )}
+
           {/* LIBRARIAN */}
           {role === "Librarian" && (
             <>
@@ -139,7 +143,7 @@ const Aside = () => {
 
       {/* Mobile Hamburger */}
       <button
-        className="md:hidden fixed top-20 left-4 z-50 bg-[#264143] text-white p-2 rounded shadow"
+        className="md:hidden fixed top-20 left-4 z-50 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200 p-2 rounded shadow"
         onClick={() => setMobileOpen(true)}
       >
         <Menu size={22} />
