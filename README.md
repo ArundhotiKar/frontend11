@@ -7,7 +7,7 @@ BookCourier is an online library delivery platform that allows users to borrow a
 ---
 
 ## Live Demo
-[View Live Project](https://magical-brigadeiros-5b870a.netlify.app/)
+[View Live Project](https://splendorous-otter-1034ab.netlify.app/)
 
 ---
 
