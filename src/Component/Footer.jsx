@@ -37,7 +37,7 @@ const Footer = () => {
               <Mail size={18} /> <a href="mailto:arundhotikar60@gmail.com" className="hover:text-blue-400 transition">arundhotikar60@gmail.com</a>
             </li>
             <li className="flex items-center gap-2">
-              <Phone size={18} /> <a href="tel:+8801793003855" className="hover:text-blue-400 transition">+880 1793 003855</a>
+              <Phone size={18} /> <a href="tel:+8801793003885" className="hover:text-blue-400 transition">+880 1793 003855</a>
             </li>
             <li className="flex items-center gap-2">
               <MapPin size={18} /> Pabna, Bangladesh

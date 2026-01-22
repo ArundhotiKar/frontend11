@@ -5,11 +5,14 @@ import LatestBooksSection from '../Component/LatestBooksSection';
 import CoverageSection from '../Component/CoverageSection';
 import WhyChooseSection from '../Component/WhyChooseSection';
 import AnimatedDelivery from '../Component/AnimatedDelivery';
-import Testimonials from '../Component/testimonials';
+import Testimonials from '../Component/Testimonials';
 import HowItWorks from '../Component/HowItWorks';
 import FAQ from '../Component/FAQ';
 import Statistics from '../Component/Statistics';
 import FeaturedAuthors from '../Component/FeaturedAuthors';
+import LibraryPartnersSection from '../Component/LibraryPartnersSection';
+
+
 const Home = () => {
 
     return (
@@ -24,6 +27,8 @@ const Home = () => {
             <Statistics></Statistics>
             <FeaturedAuthors></FeaturedAuthors>
             <FAQ></FAQ>
+            <LibraryPartnersSection></LibraryPartnersSection>
+            
         </div>
     );
 };
